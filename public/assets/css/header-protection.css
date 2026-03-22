@@ -1,0 +1,220 @@
+/*=================================
+    HEADER PROTECTION CSS
+    Memastikan header tetap seperti design original
+==================================*/
+
+/* ABSOLUTE HEADER PROTECTION */
+.th-header,
+.header-layout1,
+header {
+  /* Lock semua transformations */
+  transform: none !important;
+  scale: none !important;
+  zoom: 1 !important;
+}
+
+/* HEADER STRUCTURE PROTECTION */
+.th-header .menu-area,
+.th-header .menu-top,
+.th-header .sticky-wrapper,
+.th-header .container {
+  transform: none !important;
+  scale: none !important;
+  width: auto !important;
+}
+
+/* LOGO PROTECTION */
+.th-header .header-logo,
+.th-header .header-logo img,
+header .header-logo,
+header .header-logo img {
+  height: 80px !important;
+  width: auto !important;
+  max-height: 80px !important;
+  max-width: none !important;
+  transform: none !important;
+  scale: none !important;
+  object-fit: contain !important;
+}
+
+/* NAVIGATION PROTECTION */
+.th-header .main-menu > ul > li > a,
+header .main-menu > ul > li > a {
+  font-size: 16px !important;
+  padding: 15px 20px !important;
+  font-weight: inherit !important;
+  letter-spacing: inherit !important;
+  transform: none !important;
+  scale: none !important;
+}
+
+/* HEADER INFO PROTECTION */
+.th-header .header-info-wrap,
+.th-header .header-info,
+header .header-info-wrap,
+header .header-info {
+  transform: none !important;
+  scale: none !important;
+}
+
+.th-header .header-info_icon,
+.th-header .header-info_icon img,
+header .header-info_icon,
+header .header-info_icon img {
+  width: 24px !important;
+  height: 24px !important;
+  max-width: 24px !important;
+  max-height: 24px !important;
+  transform: none !important;
+  scale: none !important;
+}
+
+.th-header .header-info_label,
+.th-header .header-info_link,
+header .header-info_label,
+header .header-info_link {
+  font-size: inherit !important;
+  transform: none !important;
+  scale: none !important;
+}
+
+/* SEARCH FORM PROTECTION */
+.th-header .search-form,
+.th-header .search-form input,
+.th-header .search-form button,
+header .search-form,
+header .search-form input,
+header .search-form button {
+  transform: none !important;
+  scale: none !important;
+}
+
+.th-header .search-form input,
+header .search-form input {
+  font-size: 14px !important;
+  padding: 8px 12px !important;
+}
+
+/* HEADER BUTTONS PROTECTION */
+.th-header .header-button,
+.th-header .icon-btn,
+header .header-button,
+header .icon-btn {
+  transform: none !important;
+  scale: none !important;
+}
+
+/* STICKY HEADER PROTECTION */
+.sticky-wrapper.sticky-active .th-header,
+.sticky-wrapper.sticky-active header {
+  transform: none !important;
+  scale: none !important;
+}
+
+.sticky-wrapper.sticky-active .main-menu > ul > li > a {
+  font-size: 16px !important;
+  padding: 12px 18px !important;
+  transform: none !important;
+  scale: none !important;
+}
+
+/* MOBILE MENU PROTECTION */
+.th-menu-wrapper,
+.th-menu-area,
+.th-mobile-menu {
+  transform: none !important;
+  scale: none !important;
+}
+
+/* RESPONSIVE ADJUSTMENTS - GENTLE ONLY */
+@media (max-width: 1366px) {
+  /* Very minimal adjustments untuk header pada laptop */
+  .th-header .container,
+  header .container {
+    max-width: 1280px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+  
+  /* Slight adjustment for better fit */
+  .th-header .main-menu > ul > li > a,
+  header .main-menu > ul > li > a {
+    padding: 12px 16px !important;
+    font-size: 15px !important;
+  }
+  
+  /* Header info slightly smaller but readable */
+  .th-header .header-info_label,
+  header .header-info_label {
+    font-size: 10px !important;
+  }
+  
+  .th-header .header-info_link,
+  header .header-info_link {
+    font-size: 11px !important;
+  }
+  
+  /* Search input slight adjustment */
+  .th-header .search-form input,
+  header .search-form input {
+    font-size: 13px !important;
+    padding: 6px 10px !important;
+    width: 160px !important;
+  }
+}
+
+@media (max-width: 1199px) {
+  /* Tablet adjustments */
+  .th-header .main-menu > ul > li > a,
+  header .main-menu > ul > li > a {
+    padding: 10px 14px !important;
+    font-size: 14px !important;
+  }
+}
+
+@media (max-width: 991px) {
+  /* Mobile header remains as original design */
+  .th-header,
+  header {
+    transform: none !important;
+    scale: none !important;
+  }
+}
+
+/* FORCE ORIGINAL DESIGN */
+.th-header * {
+  box-sizing: border-box !important;
+}
+
+/* PREVENT ANY SCALING FROM PARENT ELEMENTS */
+.th-header {
+  zoom: 1 !important;
+  transform: scale(1) !important;
+  transform-origin: center !important;
+}
+
+/* ENSURE HEADER FONTS DON'T INHERIT RESPONSIVE SCALING */
+.th-header,
+.th-header *,
+header,
+header * {
+  font-size: inherit !important;
+}
+
+/* OVERRIDE ANY GLOBAL RESPONSIVE FONT SCALING FOR HEADER */
+.th-header .h1, .th-header h1,
+.th-header .h2, .th-header h2,
+.th-header .h3, .th-header h3,
+.th-header .h4, .th-header h4,
+.th-header .h5, .th-header h5,
+.th-header .h6, .th-header h6,
+header .h1, header h1,
+header .h2, header h2,
+header .h3, header h3,
+header .h4, header h4,
+header .h5, header h5,
+header .h6, header h6 {
+  font-size: inherit !important;
+  transform: none !important;
+  scale: none !important;
+}

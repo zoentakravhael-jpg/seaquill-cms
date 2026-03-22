@@ -1,26 +1,13 @@
-@import "tailwindcss";
+/* 
+  Tailwind v4 — only import theme + utilities, skip preflight (base layer)
+  to avoid conflicts with Bootstrap on the public site.
+  Admin panel uses its own admin.css for base styles.
+*/
+@import "tailwindcss/theme" layer(theme);
+@import "tailwindcss/utilities" layer(utilities);
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
+/* 
+  Original template CSS files (bootstrap, fontawesome, style.css etc.)
+  are loaded via <link> tags in layout.tsx from public/assets/css/
+  to ensure pixel-perfect match with static HTML template.
+*/

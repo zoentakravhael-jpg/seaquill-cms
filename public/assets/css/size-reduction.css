@@ -1,0 +1,113 @@
+/* ═══════════════════════════════════════════════
+   Global Size Reduction — ~10% smaller UI
+   Loaded AFTER style.css to override values
+   ═══════════════════════════════════════════════ */
+
+/* --- CSS Variables --- */
+:root {
+  --main-container: 1270px;
+  --container-gutters: 22px;
+  --section-space: 45px;
+  --section-space-mobile: 72px;
+  --section-title-space: 27px;
+}
+
+/* --- Base Typography --- */
+body {
+  font-size: 15px;
+  line-height: 23px;
+}
+
+p {
+  margin: 0 0 16px 0;
+}
+
+/* --- Headings (Desktop) --- */
+.h1, h1 { font-size: 54px; }
+.h2, h2 { font-size: 51px; }
+.h3, h3 { font-size: 36px; }
+.h4, h4 { font-size: 29px; }
+.h5, h5 { font-size: 22px; }
+.h6, h6 { font-size: 13px; }
+
+/* --- Heading Media Queries --- */
+@media (max-width: 1300px) {
+  .h1, h1 { font-size: 60px; }
+  .h2, h2 { font-size: 42px; }
+}
+
+@media (max-width: 1399px) {
+  .h2, h2 { font-size: 36px; }
+}
+
+@media (max-width: 1199px) {
+  .h1, h1 { font-size: 51px; }
+  .h3, h3 { font-size: 27px; }
+  .h4, h4 { font-size: 22px; }
+  .h5, h5 { font-size: 18px; }
+  .h6, h6 { font-size: 14px; }
+}
+
+@media (max-width: 767px) {
+  .h1, h1 { font-size: 36px; }
+  .h2, h2 { font-size: 29px; }
+  .h3, h3 { font-size: 23px; }
+  .h4, h4 { font-size: 20px; }
+  .h5, h5 { font-size: 14px; }
+  .h6, h6 { font-size: 13px; }
+}
+
+@media (max-width: 575px) {
+  .h1, h1 { font-size: 31px; }
+  .h2, h2 { font-size: 25px; }
+}
+
+/* --- Navigation Menu --- */
+.main-menu a {
+  font-size: 15px;
+  line-height: 25px;
+}
+
+.main-menu > ul > li {
+  margin: 0 13px;
+}
+
+.main-menu > ul > li > a {
+  padding: 18px 0;
+}
+
+/* --- Buttons --- */
+.th-btn {
+  font-size: 13px;
+  padding: 14px 14px;
+}
+
+/* --- Form Inputs --- */
+.form-control,
+input:not([type=checkbox]):not([type=radio]),
+select,
+textarea,
+.form-select {
+  font-size: 13px;
+}
+
+/* --- Table cells --- */
+td, th {
+  padding: 8px 11px;
+}
+
+/* --- Header --- */
+.header-logo {
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+/* --- Widget / Sidebar --- */
+.widget {
+  padding: 29px;
+}
+
+/* --- Footer --- */
+.footer-top {
+  padding: 43px 0;
+}

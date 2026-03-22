@@ -39,3 +39,16 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# prisma generated
+/src/generated/prisma
+
+# temp/debug files
+check-*.mjs
+_check.ts
+test-*.mjs
+CONTENT_EXTRACTION.md
+
+# uploads (user-uploaded files, use cloud storage in production)
+/public/uploads/*
+!/public/uploads/.gitkeep

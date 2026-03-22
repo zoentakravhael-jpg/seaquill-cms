@@ -1,0 +1,297 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ──────────────────────────────────────────
+// Product Domain
+// ──────────────────────────────────────────
+
+model ProductCategory {
+  id          Int       @id @default(autoincrement())
+  slug        String    @unique
+  title       String
+  icon        String
+  description String
+  sortOrder   Int       @default(0)
+  deletedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  products    Product[]
+
+  @@map("product_categories")
+}
+
+model Product {
+  id               Int             @id @default(autoincrement())
+  name             String
+  slug             String          @unique
+  image            String
+  images           String[]
+  shortDescription String          @default("")
+  description      String          @default("")
+  composition      String          @default("")
+  dosage           String          @default("")
+  sku              String          @default("")
+  tags             String[]
+  stock            Boolean         @default(true)
+  rating           Float           @default(5.0)
+  reviewCount      Int             @default(0)
+  features         String[]
+  isBestSeller     Boolean         @default(false)
+  isNew            Boolean         @default(false)
+  status           String          @default("published")
+  metaTitle        String          @default("")
+  metaDescription  String          @default("")
+  ogImage          String          @default("")
+  sortOrder        Int             @default(0)
+  deletedAt        DateTime?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  categoryId       Int
+  category         ProductCategory @relation(fields: [categoryId], references: [id])
+
+  @@map("products")
+}
+
+// ──────────────────────────────────────────
+// Blog / Article Domain
+// ──────────────────────────────────────────
+
+model BlogCategory {
+  id        Int        @id @default(autoincrement())
+  slug      String     @unique
+  title     String
+  sortOrder Int        @default(0)
+  deletedAt DateTime?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  posts     BlogPost[]
+
+  @@map("blog_categories")
+}
+
+model BlogPost {
+  id              Int          @id @default(autoincrement())
+  title           String
+  slug            String       @unique
+  image           String
+  author          String
+  content         String       @default("")
+  excerpt         String       @default("")
+  tags            String[]
+  status          String       @default("published")
+  metaTitle       String       @default("")
+  metaDescription String       @default("")
+  ogImage         String       @default("")
+  publishedAt     DateTime     @default(now())
+  deletedAt       DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  categoryId      Int
+  category        BlogCategory @relation(fields: [categoryId], references: [id])
+
+  @@map("blog_posts")
+}
+
+// ──────────────────────────────────────────
+// Contact / Messages
+// ──────────────────────────────────────────
+
+model ContactMessage {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String    @default("")
+  subject   String    @default("")
+  message   String
+  source    String    @default("contact") // "contact" or "consultation"
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@map("contact_messages")
+}
+
+// ──────────────────────────────────────────
+// Admin Users
+// ──────────────────────────────────────────
+
+model AdminUser {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("admin") // "admin", "editor", "viewer"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  activityLogs ActivityLog[]
+
+  @@map("admin_users")
+}
+
+// ──────────────────────────────────────────
+// Media Library
+// ──────────────────────────────────────────
+
+model MediaFile {
+  id        Int      @id @default(autoincrement())
+  filename  String
+  url       String
+  mimeType  String
+  size      Int
+  alt       String   @default("")
+  createdAt DateTime @default(now())
+
+  @@map("media_files")
+}
+
+// ──────────────────────────────────────────
+// Activity Log
+// ──────────────────────────────────────────
+
+model ActivityLog {
+  id         Int       @id @default(autoincrement())
+  action     String    // "create", "update", "delete", "restore", "bulk_delete", "bulk_status"
+  entity     String    // "product", "article", "product_category", "blog_category", "contact_message", "media", "settings"
+  entityId   Int?
+  entityName String    @default("")
+  details    String    @default("")
+  userId     Int
+  user       AdminUser @relation(fields: [userId], references: [id])
+  createdAt  DateTime  @default(now())
+
+  @@map("activity_logs")
+}
+
+// ──────────────────────────────────────────
+// Site Settings
+// ──────────────────────────────────────────
+
+model SiteSetting {
+  id    Int    @id @default(autoincrement())
+  key   String @unique
+  value String @default("")
+
+  @@map("site_settings")
+}
+
+// ──────────────────────────────────────────
+// Hero Slide Groups (Homepage)
+// ──────────────────────────────────────────
+
+model HeroSlideGroup {
+  id          Int         @id @default(autoincrement())
+  name        String
+  description String      @default("")
+  active      Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  slides      HeroSlide[]
+
+  @@map("hero_slide_groups")
+}
+
+// ──────────────────────────────────────────
+// Hero Slides (Homepage)
+// ──────────────────────────────────────────
+
+model HeroSlide {
+  id        Int      @id @default(autoincrement())
+  subtitle  String
+  title     String
+  bgImage   String   @default("/assets/img/hero/hero_bg_1_1.jpg")
+  ctaText   String   @default("Jelajahi Produk")
+  ctaLink   String   @default("/produk")
+  ctaText2  String   @default("Cek Manfaat Suplemen")
+  ctaLink2  String   @default("/artikel")
+  sortOrder Int      @default(0)
+  active    Boolean  @default(true)
+  groupId   Int?
+  group     HeroSlideGroup? @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("hero_slides")
+}
+
+// ──────────────────────────────────────────
+// Brand Partners (Homepage)
+// ──────────────────────────────────────────
+
+model BrandPartner {
+  id        Int      @id @default(autoincrement())
+  name      String
+  logoImage String
+  url       String   @default("")
+  sortOrder Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("brand_partners")
+}
+
+// ──────────────────────────────────────────
+// Gallery Items (Galeri Page)
+// ──────────────────────────────────────────
+
+model GalleryItem {
+  id        Int      @id @default(autoincrement())
+  image     String
+  caption   String   @default("")
+  platform  String   @default("instagram") // "instagram", "facebook", "tiktok"
+  url       String   @default("")
+  sortOrder Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("gallery_items")
+}
+
+// ──────────────────────────────────────────
+// Promo Items (Promo & Event Page)
+// ──────────────────────────────────────────
+
+model PromoItem {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String    @default("")
+  image       String    @default("")
+  ctaText     String    @default("Lihat Detail")
+  ctaLink     String    @default("#")
+  sortOrder   Int       @default(0)
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("promo_items")
+}
+
+// ──────────────────────────────────────────
+// Event Items (Promo & Event Page)
+// ──────────────────────────────────────────
+
+model EventItem {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String    @default("")
+  image       String    @default("")
+  date        String    @default("")
+  location    String    @default("")
+  ctaText     String    @default("Lihat Detail")
+  ctaLink     String    @default("#")
+  sortOrder   Int       @default(0)
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("event_items")
+}

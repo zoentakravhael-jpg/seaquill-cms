@@ -1,0 +1,212 @@
+/*=================================
+    VIEWPORT OPTIMIZER
+    Optimasi khusus untuk resolusi 1366x768 dan Full HD
+==================================*/
+
+/* Base viewport units untuk responsive scaling */
+:root {
+  --base-font-size: clamp(14px, 1.2vw, 18px);
+  --heading-scale: clamp(1.2, 1.8vw, 2.5);
+  --container-padding: clamp(15px, 3vw, 40px);
+  --section-padding: clamp(40px, 8vh, 100px);
+}
+
+/* Viewport-based responsive system */
+html {
+  font-size: var(--base-font-size);
+}
+
+/* Container responsive dengan max-width yang optimal */
+.container,
+.container-fluid {
+  width: 100%;
+  max-width: min(95vw, 1320px);
+  margin: 0 auto;
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
+}
+
+/* Specific optimizations untuk resolusi populer */
+
+/* 1366x768 - Laptop standar */
+@media screen and (width: 1366px) and (height: 768px) {
+  :root {
+    --base-font-size: 14px;
+    --heading-scale: 1.5;
+    --container-padding: 20px;
+    --section-padding: 50px;
+  }
+  
+  .container {
+    max-width: 1200px;
+  }
+  
+  /* Kompres spacing untuk layar pendek */
+  .th-hero-wrapper {
+    min-height: 60vh !important;
+    padding: 40px 0 !important;
+  }
+  
+  /* Optimasi navigation */
+  .main-menu > ul > li > a {
+    padding: 8px 12px !important;
+    font-size: 13px !important;
+  }
+}
+
+/* 1920x1080 - Full HD */
+@media screen and (width: 1920px) and (height: 1080px) {
+  :root {
+    --base-font-size: 16px;
+    --heading-scale: 2;
+    --container-padding: 30px;
+    --section-padding: 80px;
+  }
+  
+  .container {
+    max-width: 1400px;
+  }
+}
+
+/* Dynamic text scaling */
+.dynamic-text {
+  font-size: calc(var(--base-font-size) * 1);
+}
+
+.dynamic-title {
+  font-size: calc(var(--base-font-size) * var(--heading-scale));
+}
+
+/* Button scaling */
+.th-btn,
+.btn {
+  font-size: calc(var(--base-font-size) * 0.9);
+  padding: calc(var(--base-font-size) * 0.5) calc(var(--base-font-size) * 1.2);
+  border-radius: calc(var(--base-font-size) * 0.3);
+}
+
+/* Card scaling */
+.th-service,
+.shop-card,
+.blog-card {
+  margin-bottom: calc(var(--base-font-size) * 1.5);
+}
+
+/* Image responsive dengan aspect ratio */
+.hero-img,
+.product-img,
+.blog-img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Grid responsive dengan auto-fit */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: calc(var(--base-font-size) * 1.5);
+}
+
+/* Flexbox responsive */
+.flex-responsive {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--base-font-size) * 1);
+}
+
+/* Section padding yang adaptif */
+.th-hero-wrapper,
+.space,
+.space-top,
+.space-bottom {
+  padding-top: var(--section-padding);
+  padding-bottom: var(--section-padding);
+}
+
+/* Navigation responsive fixes */
+@media (max-width: 1400px) {
+  .sticky-wrapper.sticky-active .main-menu > ul > li > a {
+    padding: 6px 10px !important;
+  }
+}
+
+/* Footer responsive */
+.footer-widget {
+  margin-bottom: calc(var(--base-font-size) * 2);
+}
+
+/* Form responsive */
+.form-group {
+  margin-bottom: calc(var(--base-font-size) * 1.2);
+}
+
+.form-control {
+  font-size: var(--base-font-size);
+  padding: calc(var(--base-font-size) * 0.6) calc(var(--base-font-size) * 0.8);
+}
+
+/* Icon scaling */
+.th-icon,
+.feature-icon {
+  width: calc(var(--base-font-size) * 3);
+  height: calc(var(--base-font-size) * 3);
+}
+
+/* Animation performance optimization */
+* {
+  will-change: auto;
+}
+
+.th-anim {
+  will-change: transform, opacity;
+}
+
+/* Scroll behavior untuk resolusi terbatas */
+@media (max-height: 800px) {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  .th-hero-wrapper {
+    min-height: 70vh !important;
+  }
+}
+
+/* Text overflow handling */
+.text-limit {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.text-limit-lines {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  line-clamp: 3;
+  overflow: hidden;
+}
+
+/* Performance optimizations */
+.lazy-load {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.lazy-load.loaded {
+  opacity: 1;
+}
+
+/* Print styles untuk consistency */
+@media print {
+  * {
+    font-size: 12pt !important;
+  }
+  
+  .container {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+}

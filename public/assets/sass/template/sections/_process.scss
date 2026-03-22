@@ -1,0 +1,234 @@
+/* Processs card ------------------------*/
+
+.process-card {
+    position: relative;
+    max-width: 323px;
+    text-align: center;
+    z-index: 2;
+
+    @include sm {
+        display: block;
+        margin: auto;
+    }
+
+    &_wrapp {
+        &:nth-child(even) {
+            .process-card {
+                display: block;
+                margin: auto;
+            }
+        }
+
+        &:last-child {
+            .process-card {
+                display: block;
+                margin-left: auto;
+
+                @include lg {
+                    margin: auto;
+                }
+            }
+        }
+
+
+        &:not(:last-child) {
+            .process-card {
+                &:after {
+                    content: '';
+                    background-image: url("data:image/svg+xml,%3Csvg width='156' height='57' viewBox='0 0 156 57' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M136.664 38.1822C113.175 38.6873 91.2007 48.7902 67.7113 50.0531C60.8918 50.3057 54.0723 49.548 48.7683 46.5171C58.3661 44.7495 67.4587 41.466 74.2782 35.1513C81.6033 28.5848 82.3606 16.4612 77.8143 7.87371C73.5205 -0.208645 62.6598 -0.461216 55.0826 1.55937C37.1495 5.85271 25.0264 27.3215 35.1289 42.4755C24.0156 43.2332 12.9024 42.4755 2.04173 42.981C-0.231428 43.2332 -0.231428 46.5167 2.29431 46.5167C13.4076 47.2744 26.794 48.2847 39.9278 47.527C40.6855 48.0325 41.4432 48.7902 42.201 49.295C68.9738 67.9854 108.123 44.4961 136.916 43.7384C140.2 43.4858 140.2 37.9296 136.664 38.1822ZM37.4021 32.12C34.6237 21.7649 43.7164 12.9248 52.0513 8.63061C60.3863 4.33686 72.2572 4.33686 75.0355 15.1975C78.319 27.8262 67.4583 35.403 57.1028 38.6869C52.3039 40.2023 47.7576 41.2126 42.9587 41.7178C40.1808 39.192 38.4128 36.1611 37.4021 32.12Z' fill='%23F96363'/%3E%3Cpath d='M153.838 38.4338C150.302 36.1607 147.019 33.8875 143.735 31.6147C140.957 29.5941 138.179 27.321 134.895 26.5633C132.369 25.8055 129.844 29.5941 132.117 31.3617C134.895 33.3823 137.926 35.1504 140.705 36.9184C142.725 38.1817 144.746 39.6967 146.514 40.9596C144.493 41.9698 142.472 42.7276 140.452 43.7379C138.936 44.4956 137.168 45.2533 135.653 46.011C135.148 46.2636 134.643 46.7687 134.39 47.2739C133.632 48.2842 134.137 47.7795 134.39 47.5265C133.38 48.2842 133.38 50.8099 135.148 50.5574C135.653 50.8099 136.158 50.8099 136.915 50.8099C138.683 50.3048 140.704 49.5471 142.472 48.7893C146.261 47.2735 150.049 45.758 153.586 43.7379C155.606 42.2228 155.606 39.4441 153.838 38.4338Z' fill='%23F96363'/%3E%3C/svg%3E%0A");
+                    background-repeat: no-repeat;
+                    height: 56px;
+                    width: 155px;
+                    position: absolute;
+                    top: 50%;
+                    right: -75%;
+
+                    @include xxl {
+                        right: -50%;
+                    }
+
+                    @include lg {
+                        display: none;
+                    }
+
+                    @include sm {
+                        display: none;
+                    }
+                }
+            }
+        }
+    }
+
+    .process-wrapp {
+        mask-image: url("../img/shape/process-shape.png");
+        background-color: $white-color;
+        mask-repeat: no-repeat;
+        mask-size: 100% 100%;
+        padding: 26px 30px 40px 30px;
+        margin-bottom: 32px;
+
+    }
+
+    .box-icon {
+        width: 100px;
+        height: 100px;
+        line-height: 100px;
+        text-align: center;
+        border-radius: 50%;
+        background-color: $theme-color;
+        display: block;
+        margin: auto;
+
+        img {
+            transition: all 0.4s ease-in-out;
+        }
+    }
+
+    .divided {
+        width: 2px;
+        height: 37px;
+        background: $title-color;
+        display: block;
+        margin: 24px auto;
+
+    }
+
+    .number {
+        font-family: $title-font;
+        font-weight: 600;
+        font-size: 32px;
+        line-height: 48px;
+        letter-spacing: 0.02em;
+        color: $theme-color;
+
+        @include xs {
+            font-size: 25px;
+        }
+    }
+
+    .box-title {
+        margin-bottom: 5px;
+    }
+
+    .box-text {
+        font-size: 18px;
+        margin-bottom: 0;
+    }
+
+    &:hover {
+        .box-icon {
+            img {
+                transform: rotateY(180deg); 
+            }
+        }
+    }
+}
+
+/* process card end ---------------------------*/
+
+
+/*process area 2.1***************/
+.process-box {
+    max-width: 243px;
+    text-align: center;
+    position: relative;
+    &-wrap {
+        display: flex;
+        justify-content: space-between;
+        gap: 30px;
+    }
+    &:after {
+        content: url('data:image/svg+xml,<svg width="114" height="24" viewBox="0 0 114 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.568565 17.4547C14.2501 22.6995 29.7636 24.1449 44.2984 23.7434C59.1912 23.322 73.9255 20.5648 87.963 15.5726C91.7573 14.2342 95.493 12.7286 99.1702 11.0556C101.104 10.189 103.015 9.27555 104.902 8.31527C106.819 7.3416 108.967 6.49842 110.423 4.89236C110.764 4.54217 110.984 4.09127 111.05 3.6064C111.115 3.12152 111.023 2.62842 110.787 2.20004C110.55 1.77166 110.182 1.43076 109.737 1.22778C109.292 1.0248 108.793 0.970522 108.315 1.07297C105.082 1.75554 101.981 4.16462 99.0196 5.62011C95.7021 7.25125 92.3144 8.75693 88.8764 10.107C82.2655 12.6862 75.4667 14.7551 68.5397 16.2953C54.519 19.4574 40.1066 20.5213 25.7736 19.4522C17.3819 18.8048 9.27639 17.3644 1.01023 15.8838C0.80738 15.8331 0.592794 15.8625 0.41105 15.9659C0.229305 16.0693 0.0943765 16.2387 0.0342942 16.439C-0.025788 16.6392 -0.00641477 16.8549 0.0884075 17.0413C0.18323 17.2277 0.346213 17.3703 0.543477 17.4396L0.568565 17.4547Z" fill="%23D8DDE1"/><path d="M97.78 2.8843C100.184 3.7074 102.799 3.84793 105.308 4.18921C106.468 4.34982 107.627 4.51042 108.786 4.66099C109.219 4.7682 109.661 4.82877 110.106 4.84167C110.337 4.84167 111.025 5.15786 110.408 4.81156C110.096 4.2394 109.785 3.66725 109.469 3.09509C109.499 3.73249 107.637 5.38873 107.226 5.88059L105.007 8.57575C103.757 10.0814 102.111 11.3361 102.237 13.409C102.236 13.6028 102.279 13.7944 102.362 13.9695C102.445 14.1446 102.567 14.2988 102.718 14.4207C102.868 14.5425 103.045 14.629 103.233 14.6737C103.422 14.7184 103.618 14.7201 103.808 14.6787C105.85 14.4027 106.819 12.5005 108.034 10.9949C109.248 9.48919 110.573 7.91325 111.838 6.36742C113.103 4.82159 114.483 2.13146 111.702 1.20296C109.896 0.600686 107.612 0.615743 105.735 0.435062C103.11 0.189135 100.47 -0.192302 97.8402 0.113852C96.3345 0.294533 96.5553 2.46773 97.7699 2.8843H97.78Z" fill="%23D8DDE1"/></svg>');
+        position: absolute;
+        top: 30%;
+        left: 90%;
+    }
+    .img-wrap {
+        width: 154px;
+        height: 172px;
+        padding: 8px;
+        margin: 0 auto 24px auto;
+    }
+    .box-img {
+        height: 156px;
+        position: relative;
+        img {
+            height: 100%;
+            transition: 0.4s ease-in-out;
+        }
+    }
+    .box-title {
+        font-size: 22px;
+        margin-bottom: 10px;
+    }
+    .box-text {
+        margin-bottom: -0.4em;
+    }
+    .box-number {
+        width: 36px;
+        height: 40px;
+        line-height: 40px;
+        font-size: 18px;
+        font-weight: 600;
+        color: $white-color;
+        background-color: $theme-color;
+        position: absolute;
+        bottom: 0;
+        left: calc(50% - 18px);
+        clip-path: path(
+            "M16.8293 0.872822L1.15962 9.76303C0.441905 10.1702 0 10.9214 0 11.7342V29.5255C0 30.3435 0.447543 31.0987 1.1725 31.5039L16.8486 40.2672C17.5622 40.6662 18.4378 40.6661 19.1514 40.2671L34.8278 31.5011C35.5526 31.0957 36 30.3407 36 29.5228V11.8415C36 11.0326 35.5623 10.2845 34.8501 9.87582L19.1674 0.878402C18.4458 0.464403 17.5529 0.46229 16.8293 0.872822Z"
+        );
+        text-align: center;
+        margin: 0;
+    }
+    &:nth-child(even) {
+        &:after {
+            transform: rotateX(180deg) translate(10px, 10px);
+        }
+        .box-number {
+            background-color: $theme-color;
+        }
+    }
+    &:last-child {
+        &:after {
+            display: none;
+        }
+    }
+    @include xl {
+        &:after {
+            display: none;
+        }
+    }
+    @include md {
+        flex: 50%;
+        max-width: 334px;
+        &-wrap {
+            flex-wrap: wrap;
+            gap: 40px 20px;
+        }
+    }
+    @include sm {
+        margin-left: auto;
+        margin-right: auto;
+    }
+    &:hover {
+        .box-img {
+            img {
+                transform: scale(1.1);
+            }
+        }
+    }
+}
+.process-box.style2 {
+    .img-wrap {
+        position: relative;
+        .box-number {
+            right: 20px;
+            top: 10px;
+            left: auto;
+            bottom: auto;
+            clip-path: path("M13.6292 2.57217C16.3474 1.06206 19.6526 1.06206 22.3708 2.57217L30.3708 7.01662C33.228 8.60394 35 11.6155 35 14.884V23.116C35 26.3845 33.228 29.3961 30.3708 30.9834L22.3708 35.4278C19.6526 36.9379 16.3474 36.9379 13.6292 35.4278L5.62921 30.9834C2.77203 29.3961 1 26.3845 1 23.116V14.884C1 11.6155 2.77203 8.60394 5.62921 7.01662L13.6292 2.57217Z");
+            background: $theme-color;
+        }
+    }
+}
