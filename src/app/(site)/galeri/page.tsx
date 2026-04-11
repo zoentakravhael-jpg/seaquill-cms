@@ -3,6 +3,8 @@ import Breadcrumb from "@/components/layout/Breadcrumb";
 import GallerySliders from "@/components/galeri/GallerySliders";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Galeri Sea-Quill | Foto & Video",
   description: "Lihat koleksi galeri foto dan video Sea-Quill dari berbagai platform media sosial.",

@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import Breadcrumb from "@/components/layout/Breadcrumb";
 import HubungiKamiClient from "@/components/hubungi/HubungiKamiClient";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Hubungi Kami | Sea-Quill Indonesia",
   description: "Hubungi Sea-Quill untuk informasi produk, konsultasi kesehatan, atau kerja sama bisnis. Kami siap membantu Anda.",

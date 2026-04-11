@@ -3,6 +3,8 @@ import Breadcrumb from "@/components/layout/Breadcrumb";
 import TentangProjectSlider from "@/components/tentang/TentangProjectSlider";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Tentang Sea-Quill | Suplemen Kesehatan Terpercaya Sejak 1984",
   description: "Kenali Sea-Quill lebih dekat. Sejak 1984, kami menyediakan suplemen kesehatan berkualitas premium dengan sertifikasi BPOM dan Halal di Indonesia.",

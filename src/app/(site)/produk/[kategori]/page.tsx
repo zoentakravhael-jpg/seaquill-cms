@@ -5,7 +5,7 @@ import ProductGrid from "@/components/shared/ProductGrid";
 import Pagination from "@/components/shared/Pagination";
 import { prisma } from "@/lib/prisma";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 interface Props {
   params: Promise<{ kategori: string }>;

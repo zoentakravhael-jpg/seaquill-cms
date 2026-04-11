@@ -3,6 +3,8 @@ import Link from "next/link";
 import Breadcrumb from "@/components/layout/Breadcrumb";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Pencarian | Sea-Quill",
   description: "Cari produk dan artikel kesehatan Sea-Quill.",

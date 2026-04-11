@@ -5,7 +5,7 @@ import BlogGridCard from "@/components/shared/BlogGridCard";
 import BlogSidebar from "@/components/shared/BlogSidebar";
 import { prisma } from "@/lib/prisma";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 interface Props {
   params: Promise<{ kategori: string }>;

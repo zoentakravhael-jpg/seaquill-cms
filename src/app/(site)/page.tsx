@@ -21,6 +21,8 @@ import ProductSlider from "@/components/home/ProductSlider";
 import BrandPartners from "@/components/home/BrandPartners";
 import BlogSlider from "@/components/home/BlogSlider";
 
+export const dynamic = "force-dynamic";
+
 async function getSettings(keys: string[]) {
   const rows = await prisma.siteSetting.findMany({
     where: { key: { in: keys } },
