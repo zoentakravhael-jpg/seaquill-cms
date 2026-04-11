@@ -1,11 +1,50 @@
 import type { Metadata } from "next";
+import { Inter, Outfit, Saira } from "next/font/google";
 import "./globals.css";
 
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
+});
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-outfit",
+});
+
+const saira = Saira({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-saira",
+});
+
 export const metadata: Metadata = {
-  title: "Seaquill - Suplemen Kesehatan Terpercaya",
+  title: {
+    default: "Seaquill - Suplemen Kesehatan Terpercaya",
+    template: "%s | Seaquill",
+  },
   description:
     "Sea-Quill adalah suplemen kesehatan berkualitas dengan berbagai pilihan produk yang telah bersertifikat BPOM dan Halal.",
-  keywords: "Seaquill, suplemen, kesehatan, BPOM, Halal",
+  keywords: "Seaquill, Sea-Quill, suplemen, kesehatan, BPOM, Halal, vitamin, mineral, omega 3",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://seaquill-cms-production.up.railway.app"),
+  openGraph: {
+    type: "website",
+    locale: "id_ID",
+    siteName: "Seaquill",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   icons: {
     icon: [
       { url: "/assets/img/favicons/favicon-32x32.png", sizes: "32x32" },
@@ -24,16 +63,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className="no-js">
+    <html lang="id" className={`no-js ${inter.variable} ${outfit.variable} ${saira.variable}`}>
       <head>
-        {/* Google Fonts */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&family=Saira:ital,wght@0,100..900;1,100..900&display=swap"
-          rel="stylesheet"
-        />
-
         {/* Original Template CSS — pixel-perfect match */}
         <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
         <link rel="stylesheet" href="/assets/css/fontawesome.min.css" />
@@ -41,6 +72,13 @@ export default function RootLayout({
         <link rel="stylesheet" href="/assets/css/swiper-bundle.min.css" />
         <link rel="stylesheet" href="/assets/css/style.css" />
         <link rel="stylesheet" href="/assets/css/size-reduction.css" />
+        {/* Override: kurangi space kosong di bawah nav */}
+        <style dangerouslySetInnerHTML={{ __html: `
+          .hero-style1 { padding-top: 250px !important; }
+          @media (max-width: 991px) { .hero-style1 { padding-top: 200px !important; } }
+          @media (max-width: 575px) { .hero-style1 { padding-top: 160px !important; } }
+          .breadcumb-wrapper { padding-top: 80px !important; padding-bottom: 80px !important; }
+        ` }} />
       </head>
       <body>
         {children}

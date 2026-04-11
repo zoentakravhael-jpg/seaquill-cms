@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 interface BlogGridCardProps {
   title: string;
@@ -18,7 +19,7 @@ export default function BlogGridCard({
       <div className="th-blog blog-single has-post-thumbnail single-grid">
         <div className="blog-img global-img">
           <Link href={`/artikel/detail/${slug}`}>
-            {image && <img src={image} alt="Blog Image" />}
+            {image && <Image src={image} alt={title} width={800} height={450} sizes="(max-width: 768px) 100vw, 50vw" />}
           </Link>
         </div>
         <div className="blog-content">

@@ -1,13 +1,42 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Breadcrumb from "@/components/layout/Breadcrumb";
 import ProductGrid from "@/components/shared/ProductGrid";
 import Pagination from "@/components/shared/Pagination";
 import { prisma } from "@/lib/prisma";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 interface Props {
   params: Promise<{ kategori: string }>;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { kategori } = await params;
+  const specialNames: Record<string, string> = {
+    "best-seller": "Best Seller",
+    "produk-baru": "Produk Baru",
+  };
+  if (specialNames[kategori]) {
+    return {
+      title: `${specialNames[kategori]} | Produk Sea-Quill`,
+      description: `Temukan produk ${specialNames[kategori]} Sea-Quill. Suplemen kesehatan berkualitas bersertifikat BPOM dan Halal.`,
+    };
+  }
+  const category = await prisma.productCategory.findUnique({
+    where: { slug: kategori, deletedAt: null },
+    select: { title: true, description: true },
+  });
+  if (!category) return { title: "Kategori Tidak Ditemukan" };
+  return {
+    title: `${category.title} | Produk Sea-Quill`,
+    description: category.description || `Temukan produk ${category.title} dari Sea-Quill. Suplemen kesehatan berkualitas.`,
+    openGraph: {
+      title: `${category.title} | Produk Sea-Quill`,
+      description: category.description || `Produk ${category.title} dari Sea-Quill.`,
+      type: "website",
+    },
+  };
 }
 
 export default async function ProductCategoryPage({ params }: Props) {

@@ -17,5 +17,11 @@ export default async function HubungiLayoutPage() {
   const settingsMap: Record<string, string> = {};
   for (const s of settings) settingsMap[s.key] = s.value;
 
-  return <HubungiLayoutClient settings={settingsMap} />;
+  const forms = await prisma.form.findMany({
+    where: { deletedAt: null },
+    select: { id: true, name: true, slug: true, status: true },
+    orderBy: { name: "asc" },
+  });
+
+  return <HubungiLayoutClient settings={settingsMap} forms={forms} />;
 }

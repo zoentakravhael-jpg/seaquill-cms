@@ -1,8 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit: 5 contact submissions per 10 minutes per IP
+    const ip = getClientIp(request.headers);
+    const rl = rateLimit(ip, { prefix: "contact", limit: 5, windowSeconds: 600 });
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: "Terlalu banyak pengiriman pesan. Coba lagi nanti." },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
     const { name, email, phone, subject, message, source } = body;
 

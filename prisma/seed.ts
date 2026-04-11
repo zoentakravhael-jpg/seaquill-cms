@@ -767,7 +767,7 @@ async function main() {
       items: [
         {
           platform: "Instagram",
-          icon: "/assets/img/icon/instagram.png",
+          icon: "/assets/img/icon/instagram.svg",
           title: "@seaquill.id",
           description: "Dapatkan info promo, edukasi kesehatan, dan inspirasi gaya hidup sehat langsung dari Instagram resmi Sea-Quill.",
           link: "https://instagram.com/seaquill.id",
@@ -775,7 +775,7 @@ async function main() {
         },
         {
           platform: "Facebook",
-          icon: "/assets/img/icon/facebook.png",
+          icon: "/assets/img/icon/facebook.svg",
           title: "Sea-Quill Indonesia",
           description: "Like dan follow Facebook Sea-Quill untuk update berita, tips kesehatan, dan testimoni pengguna.",
           link: "https://facebook.com/seaquill.indonesia",
@@ -783,7 +783,7 @@ async function main() {
         },
         {
           platform: "TikTok",
-          icon: "/assets/img/icon/tiktok.png",
+          icon: "/assets/img/icon/tiktok.svg",
           title: "@seaquill.id",
           description: "Saksikan konten seru, tips kesehatan, dan edukasi suplemen dengan format video di TikTok Sea-Quill.",
           link: "https://tiktok.com/@seaquill.id",
@@ -797,7 +797,7 @@ async function main() {
       items: [
         {
           platform: "Tokopedia",
-          icon: "/assets/img/icon/tokopedia.png",
+          icon: "/assets/img/icon/tokopedia.svg",
           title: "Tokopedia Official",
           description: "Dapatkan produk Sea-Quill original dan promo menarik langsung dari official store kami di Tokopedia.",
           link: "https://tokopedia.com/seaquill",
@@ -805,7 +805,7 @@ async function main() {
         },
         {
           platform: "Shopee",
-          icon: "/assets/img/icon/shopee.png",
+          icon: "/assets/img/icon/shopee.svg",
           title: "Shopee Official",
           description: "Cari produk Sea-Quill dan nikmati kemudahan belanja serta voucher di Shopee.",
           link: "https://shopee.co.id/seaquill",
@@ -813,7 +813,7 @@ async function main() {
         },
         {
           platform: "Lazada",
-          icon: "/assets/img/icon/wa.png",
+          icon: "/assets/img/icon/lazada.svg",
           title: "Lazada Official Store",
           description: "Nikmati pengalaman belanja produk Sea-Quill yang aman dan mudah, dengan promo eksklusif dan layanan pengiriman cepat hanya di Lazada Official Store kami.",
           link: "https://www.lazada.co.id/shop/seaquill-official/",
@@ -821,7 +821,7 @@ async function main() {
         },
         {
           platform: "TikTok Shop",
-          icon: "/assets/img/icon/wa.png",
+          icon: "/assets/img/icon/tiktok.svg",
           title: "TikTok Shop Official",
           description: "Belanja langsung lewat TikTok Shop Sea-Quill dan dapatkan penawaran spesial serta flash sale selama live streaming bersama kami!",
           link: "https://www.tiktok.com/@seaquill.id/shop",

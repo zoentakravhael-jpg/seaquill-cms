@@ -2,14 +2,23 @@ import { NextRequest, NextResponse } from "next/server";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/session";
 import crypto from "crypto";
 
 const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml"];
-const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+const ALLOWED_TYPES = [
+  "image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml",
+  "video/mp4", "video/webm", "video/ogg",
+];
+const MAX_SIZE_IMAGE = 5 * 1024 * 1024; // 5MB
+const MAX_SIZE_VIDEO = 50 * 1024 * 1024; // 50MB
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
 
@@ -19,14 +28,16 @@ export async function POST(request: NextRequest) {
 
     if (!ALLOWED_TYPES.includes(file.type)) {
       return NextResponse.json(
-        { error: "Tipe file tidak diizinkan. Gunakan JPG, PNG, WebP, GIF, atau SVG." },
+        { error: "Tipe file tidak diizinkan. Gunakan JPG, PNG, WebP, GIF, SVG, MP4, WebM, atau OGG." },
         { status: 400 }
       );
     }
 
-    if (file.size > MAX_SIZE) {
+    const isVideo = file.type.startsWith("video/");
+    const maxSize = isVideo ? MAX_SIZE_VIDEO : MAX_SIZE_IMAGE;
+    if (file.size > maxSize) {
       return NextResponse.json(
-        { error: "Ukuran file maksimal 5MB." },
+        { error: `Ukuran file maksimal ${isVideo ? "50MB" : "5MB"}.` },
         { status: 400 }
       );
     }

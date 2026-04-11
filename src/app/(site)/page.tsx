@@ -1,5 +1,18 @@
+import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import HeroSlider from "@/components/home/HeroSlider";
+
+export const metadata: Metadata = {
+  title: "Seaquill - Suplemen Kesehatan Terpercaya | Bersertifikat BPOM & Halal",
+  description: "Sea-Quill menyediakan suplemen kesehatan berkualitas premium dengan sertifikasi BPOM dan Halal. Temukan produk terbaik untuk kesehatan jantung, kulit, sendi, dan daya tahan tubuh.",
+  openGraph: {
+    title: "Seaquill - Suplemen Kesehatan Terpercaya",
+    description: "Sea-Quill menyediakan suplemen kesehatan berkualitas premium dengan sertifikasi BPOM dan Halal.",
+    type: "website",
+    locale: "id_ID",
+    siteName: "Seaquill",
+  },
+};
 import type { HeroSliderConfig } from "@/components/home/HeroSlider";
 import FeatureCards from "@/components/home/FeatureCards";
 import AboutSection from "@/components/home/AboutSection";
@@ -115,10 +128,34 @@ export default async function Home() {
     settings.hero_slider_config || '{"autoplay":true,"autoplayDelay":5000,"loop":true,"pauseOnHover":true}'
   );
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://seaquill-cms-production.up.railway.app";
+
+  const orgJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Sea-Quill Indonesia",
+    url: siteUrl,
+    logo: `${siteUrl}/assets/img/logo.svg`,
+    sameAs: [
+      socialLinks.instagram,
+      socialLinks.facebook,
+      socialLinks.twitter,
+      socialLinks.linkedin,
+    ].filter(Boolean),
+    description: "Sea-Quill menyediakan suplemen kesehatan berkualitas premium dengan sertifikasi BPOM dan Halal.",
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
+      />
       {/* Hero Area */}
       <HeroSlider slides={heroSlides} socialLinks={socialLinks} sliderConfig={heroSliderConfig} />
+
+      {/* Brand Partners */}
+      <BrandPartners brands={brandPartners} sliderConfig={brandSliderConfig} />
 
       {/* Feature Cards */}
       <FeatureCards features={featureCards} />
@@ -131,9 +168,6 @@ export default async function Home() {
 
       {/* Product Slider */}
       <ProductSlider products={filteredProducts} section={productSection} activeFlags={featuredFlags} sliderConfig={productSliderConfig} />
-
-      {/* Brand Partners */}
-      <BrandPartners brands={brandPartners} sliderConfig={brandSliderConfig} />
 
       {/* Blog Slider */}
       <BlogSlider blogs={recentBlogs} section={blogSection} sliderConfig={blogSliderConfig} />

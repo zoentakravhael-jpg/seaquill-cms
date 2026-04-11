@@ -5,6 +5,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
 import type { SwiperClass } from "swiper/react";
 import Link from "next/link";
+import Image from "next/image";
 
 import "swiper/css";
 import "swiper/css/navigation";
@@ -106,7 +107,7 @@ export default function BlogSlider({
               <SwiperSlide key={`${blog.id}-${idx}`}>
                 <div className="blog-card wow fadeInUp">
                   <div className="box-img global-img">
-                    <img src={blog.image} alt={blog.title} />
+                    <Image src={blog.image} alt={blog.title} width={800} height={450} sizes="(max-width: 768px) 100vw, (max-width: 992px) 50vw, 33vw" />
                   </div>
                   <div className="box-content">
                     <div className="blog-meta">

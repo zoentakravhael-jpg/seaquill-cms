@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 export interface LayoutTab {
   key: string;
@@ -58,7 +59,7 @@ export function LayoutSection({ title, icon, iconColor, badge, manageLink, info,
         {info && (
           <div className="admin-layout-info-box" style={{ marginBottom: children ? 16 : 0 }}>
             <i className="fas fa-info-circle"></i>
-            <span dangerouslySetInnerHTML={{ __html: info }} />
+            <span dangerouslySetInnerHTML={{ __html: sanitizeHtml(info) }} />
           </div>
         )}
         {children}

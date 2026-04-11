@@ -7,6 +7,14 @@
 @import "tailwindcss/utilities" layer(utilities);
 
 /* 
+  Map next/font CSS variables to the font-family names used by the original template CSS.
+  This allows self-hosted fonts via next/font while keeping CSS compatibility.
+*/
+:root {
+  font-family: var(--font-inter), 'Inter', sans-serif;
+}
+
+/* 
   Original template CSS files (bootstrap, fontawesome, style.css etc.)
   are loaded via <link> tags in layout.tsx from public/assets/css/
   to ensure pixel-perfect match with static HTML template.

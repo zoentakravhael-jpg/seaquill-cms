@@ -15911,6 +15911,8 @@ span.select2-selection.select2-selection--single:focus {
   z-index: 2;
   border-radius: 16px;
   margin-right: -80px;
+  max-width: 300px;
+  flex-shrink: 0;
 }
 @media (max-width: 1799px) {
   .about-wrapper.style2 .video-img2 {
@@ -15927,6 +15929,13 @@ span.select2-selection.select2-selection--single:focus {
   z-index: 1;
 }
 .about-wrapper.style2 .video-img2 img {
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+.about-wrapper.style2 .video-img2 video {
   width: 100%;
   height: 100%;
   border-radius: 16px;

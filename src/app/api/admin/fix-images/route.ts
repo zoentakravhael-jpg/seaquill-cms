@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/session";
 
 // Temporary endpoint to fix product images - DELETE after use
 export async function GET() {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const imageMap: Record<string, string> = {
     "omega-3-salmon": "/assets/img/product/product_1_1.jpg",
     "calcium": "/assets/img/product/product_1_2.jpg",

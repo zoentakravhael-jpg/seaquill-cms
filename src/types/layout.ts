@@ -22,10 +22,17 @@ export interface RecentPost {
   categorySlug: string;
 }
 
+/** Minimal product shape for dropdowns */
+export interface NavProduct {
+  id: number;
+  name: string;
+}
+
 /** Props shared by Header and Footer */
 export interface LayoutDataProps {
   siteSettings: SiteSettings;
   productCategories: NavCategory[];
   blogCategories: NavCategory[];
   recentPosts: RecentPost[];
+  products?: NavProduct[];
 }

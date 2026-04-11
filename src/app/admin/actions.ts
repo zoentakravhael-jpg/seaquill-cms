@@ -3,10 +3,18 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { logActivity } from "@/lib/activity-log";
+import { getSession } from "@/lib/session";
 
 export type ActionResult = { success: true; redirect: string } | { success: false; error: string };
 
+async function requireAuth() {
+  const session = await getSession();
+  if (!session) throw new Error("Unauthorized");
+  return session;
+}
+
 export async function createProductCategory(formData: FormData): Promise<ActionResult> {
+  await requireAuth();
   const title = (formData.get("title") as string)?.trim();
   const slug = (formData.get("slug") as string)?.trim();
   const icon = (formData.get("icon") as string)?.trim();
@@ -27,6 +35,7 @@ export async function createProductCategory(formData: FormData): Promise<ActionR
 }
 
 export async function updateProductCategory(formData: FormData): Promise<ActionResult> {
+  await requireAuth();
   const id = parseInt(formData.get("id") as string);
   const title = (formData.get("title") as string)?.trim();
   const slug = (formData.get("slug") as string)?.trim();
@@ -49,6 +58,7 @@ export async function updateProductCategory(formData: FormData): Promise<ActionR
 }
 
 export async function deleteProductCategory(formData: FormData) {
+  await requireAuth();
   const id = parseInt(formData.get("id") as string);
   const cat = await prisma.productCategory.findUnique({ where: { id } });
   await prisma.productCategory.update({ where: { id }, data: { deletedAt: new Date() } });
@@ -57,6 +67,7 @@ export async function deleteProductCategory(formData: FormData) {
 }
 
 export async function createProduct(formData: FormData): Promise<ActionResult> {
+  await requireAuth();
   const name = (formData.get("name") as string)?.trim();
   const slug = (formData.get("slug") as string)?.trim();
   const image = (formData.get("image") as string)?.trim();
@@ -99,6 +110,7 @@ export async function createProduct(formData: FormData): Promise<ActionResult> {
 }
 
 export async function updateProduct(formData: FormData): Promise<ActionResult> {
+  await requireAuth();
   const id = parseInt(formData.get("id") as string);
   const name = (formData.get("name") as string)?.trim();
   const slug = (formData.get("slug") as string)?.trim();
@@ -143,6 +155,7 @@ export async function updateProduct(formData: FormData): Promise<ActionResult> {
 }
 
 export async function deleteProduct(formData: FormData) {
+  await requireAuth();
   const id = parseInt(formData.get("id") as string);
   const product = await prisma.product.findUnique({ where: { id } });
   await prisma.product.update({ where: { id }, data: { deletedAt: new Date() } });
@@ -151,6 +164,7 @@ export async function deleteProduct(formData: FormData) {
 }
 
 export async function createBlogCategory(formData: FormData): Promise<ActionResult> {
+  await requireAuth();
   const title = (formData.get("title") as string)?.trim();
   const slug = (formData.get("slug") as string)?.trim();
   const sortOrder = parseInt(formData.get("sortOrder") as string) || 0;
@@ -169,6 +183,7 @@ export async function createBlogCategory(formData: FormData): Promise<ActionResu
 }
 
 export async function updateBlogCategory(formData: FormData): Promise<ActionResult> {
+  await requireAuth();
   const id = parseInt(formData.get("id") as string);
   const title = (formData.get("title") as string)?.trim();
   const slug = (formData.get("slug") as string)?.trim();
@@ -189,6 +204,7 @@ export async function updateBlogCategory(formData: FormData): Promise<ActionResu
 }
 
 export async function deleteBlogCategory(formData: FormData) {
+  await requireAuth();
   const id = parseInt(formData.get("id") as string);
   const bc = await prisma.blogCategory.findUnique({ where: { id } });
   await prisma.blogCategory.update({ where: { id }, data: { deletedAt: new Date() } });
@@ -197,6 +213,7 @@ export async function deleteBlogCategory(formData: FormData) {
 }
 
 export async function createBlogPost(formData: FormData): Promise<ActionResult> {
+  await requireAuth();
   const title = (formData.get("title") as string)?.trim();
   const slug = (formData.get("slug") as string)?.trim();
   const image = (formData.get("image") as string)?.trim() || "";
@@ -224,6 +241,7 @@ export async function createBlogPost(formData: FormData): Promise<ActionResult> 
 }
 
 export async function updateBlogPost(formData: FormData): Promise<ActionResult> {
+  await requireAuth();
   const id = parseInt(formData.get("id") as string);
   const title = (formData.get("title") as string)?.trim();
   const slug = (formData.get("slug") as string)?.trim();
@@ -253,6 +271,7 @@ export async function updateBlogPost(formData: FormData): Promise<ActionResult> 
 }
 
 export async function deleteBlogPost(formData: FormData) {
+  await requireAuth();
   const id = parseInt(formData.get("id") as string);
   const post = await prisma.blogPost.findUnique({ where: { id } });
   await prisma.blogPost.update({ where: { id }, data: { deletedAt: new Date() } });
@@ -261,6 +280,7 @@ export async function deleteBlogPost(formData: FormData) {
 }
 
 export async function deleteContactMessage(formData: FormData) {
+  await requireAuth();
   const id = parseInt(formData.get("id") as string);
   const msg = await prisma.contactMessage.findUnique({ where: { id } });
   await prisma.contactMessage.update({ where: { id }, data: { deletedAt: new Date() } });
@@ -269,6 +289,7 @@ export async function deleteContactMessage(formData: FormData) {
 }
 
 export async function deleteMediaFile(formData: FormData) {
+  await requireAuth();
   const id = parseInt(formData.get("id") as string);
   const file = await prisma.mediaFile.findUnique({ where: { id } });
   if (file) {
@@ -291,42 +312,49 @@ export async function deleteMediaFile(formData: FormData) {
 // ──────────────────────────────────────────
 
 export async function bulkDeleteProducts(ids: number[]) {
+  await requireAuth();
   await prisma.product.updateMany({ where: { id: { in: ids } }, data: { deletedAt: new Date() } });
   await logActivity("bulk_delete", "product", undefined, undefined, `${ids.length} items`);
   revalidatePath("/admin/produk");
 }
 
 export async function bulkUpdateProductStatus(ids: number[], status: string) {
+  await requireAuth();
   await prisma.product.updateMany({ where: { id: { in: ids } }, data: { status } });
   await logActivity("bulk_status", "product", undefined, undefined, `${ids.length} items → ${status}`);
   revalidatePath("/admin/produk");
 }
 
 export async function bulkDeleteBlogPosts(ids: number[]) {
+  await requireAuth();
   await prisma.blogPost.updateMany({ where: { id: { in: ids } }, data: { deletedAt: new Date() } });
   await logActivity("bulk_delete", "article", undefined, undefined, `${ids.length} items`);
   revalidatePath("/admin/artikel");
 }
 
 export async function bulkUpdateBlogPostStatus(ids: number[], status: string) {
+  await requireAuth();
   await prisma.blogPost.updateMany({ where: { id: { in: ids } }, data: { status } });
   await logActivity("bulk_status", "article", undefined, undefined, `${ids.length} items → ${status}`);
   revalidatePath("/admin/artikel");
 }
 
 export async function bulkDeleteProductCategories(ids: number[]) {
+  await requireAuth();
   await prisma.productCategory.updateMany({ where: { id: { in: ids } }, data: { deletedAt: new Date() } });
   await logActivity("bulk_delete", "product_category", undefined, undefined, `${ids.length} items`);
   revalidatePath("/admin/kategori-produk");
 }
 
 export async function bulkDeleteBlogCategories(ids: number[]) {
+  await requireAuth();
   await prisma.blogCategory.updateMany({ where: { id: { in: ids } }, data: { deletedAt: new Date() } });
   await logActivity("bulk_delete", "blog_category", undefined, undefined, `${ids.length} items`);
   revalidatePath("/admin/kategori-artikel");
 }
 
 export async function bulkDeleteContactMessages(ids: number[]) {
+  await requireAuth();
   await prisma.contactMessage.updateMany({ where: { id: { in: ids } }, data: { deletedAt: new Date() } });
   await logActivity("bulk_delete", "contact_message", undefined, undefined, `${ids.length} items`);
   revalidatePath("/admin/pesan");
@@ -337,6 +365,7 @@ export async function bulkDeleteContactMessages(ids: number[]) {
 // ──────────────────────────────────────────
 
 export async function restoreItem(entity: string, id: number) {
+  await requireAuth();
   switch (entity) {
     case "product":
       await prisma.product.update({ where: { id }, data: { deletedAt: null } });
@@ -359,6 +388,7 @@ export async function restoreItem(entity: string, id: number) {
 }
 
 export async function permanentDelete(entity: string, id: number) {
+  await requireAuth();
   switch (entity) {
     case "product":
       await prisma.product.delete({ where: { id } });
@@ -380,6 +410,7 @@ export async function permanentDelete(entity: string, id: number) {
 }
 
 export async function emptyTrash() {
+  await requireAuth();
   await Promise.all([
     prisma.product.deleteMany({ where: { deletedAt: { not: null } } }),
     prisma.blogPost.deleteMany({ where: { deletedAt: { not: null } } }),
@@ -396,6 +427,7 @@ export async function emptyTrash() {
 // ──────────────────────────────────────────
 
 export async function updateSettings(formData: FormData): Promise<ActionResult> {
+  await requireAuth();
   const keys = [
     "site_name", "site_tagline", "site_description", "site_copyright",
     "contact_email", "contact_phone", "contact_address", "contact_whatsapp",
@@ -431,6 +463,7 @@ export async function updateLayoutSettings(
   formData: FormData,
   redirectPath: string
 ): Promise<ActionResult> {
+  await requireAuth();
   for (const key of keys) {
     const value = (formData.get(key) as string)?.trim() || "";
     await prisma.siteSetting.upsert({
@@ -451,6 +484,7 @@ export async function updateLayoutSettings(
 // ──────────────────────────────────────────
 
 export async function createAdminUser(formData: FormData): Promise<ActionResult> {
+  await requireAuth();
   const name = (formData.get("name") as string)?.trim();
   const email = (formData.get("email") as string)?.trim();
   const password = (formData.get("password") as string);
@@ -478,6 +512,7 @@ export async function createAdminUser(formData: FormData): Promise<ActionResult>
 }
 
 export async function updateAdminUser(formData: FormData): Promise<ActionResult> {
+  await requireAuth();
   const id = parseInt(formData.get("id") as string);
   const name = (formData.get("name") as string)?.trim();
   const email = (formData.get("email") as string)?.trim();
@@ -507,6 +542,7 @@ export async function updateAdminUser(formData: FormData): Promise<ActionResult>
 }
 
 export async function deleteAdminUser(formData: FormData) {
+  await requireAuth();
   const id = parseInt(formData.get("id") as string);
   const user = await prisma.adminUser.findUnique({ where: { id } });
   await prisma.adminUser.delete({ where: { id } });
@@ -524,6 +560,7 @@ export async function updateHeroSliderConfig(data: {
   loop: boolean;
   pauseOnHover: boolean;
 }): Promise<ActionResult> {
+  await requireAuth();
   const config = JSON.stringify({
     autoplay: !!data.autoplay,
     autoplayDelay: Math.max(1000, Math.min(30000, data.autoplayDelay || 5000)),
@@ -548,6 +585,7 @@ export async function updateHeroSliderConfig(data: {
 // ──────────────────────────────────────────
 
 export async function createHeroSlideGroup(formData: FormData): Promise<ActionResult> {
+  await requireAuth();
   const name = (formData.get("name") as string)?.trim();
   const description = (formData.get("description") as string)?.trim() || "";
   const active = formData.get("active") === "on";
@@ -572,6 +610,7 @@ export async function createHeroSlideGroup(formData: FormData): Promise<ActionRe
 }
 
 export async function updateHeroSlideGroup(formData: FormData): Promise<ActionResult> {
+  await requireAuth();
   const id = parseInt(formData.get("id") as string);
   const name = (formData.get("name") as string)?.trim();
   const description = (formData.get("description") as string)?.trim() || "";
@@ -601,6 +640,7 @@ export async function updateHeroSlideGroup(formData: FormData): Promise<ActionRe
 }
 
 export async function deleteHeroSlideGroup(formData: FormData) {
+  await requireAuth();
   const id = parseInt(formData.get("id") as string);
   const group = await prisma.heroSlideGroup.findUnique({ where: { id } });
 
@@ -617,6 +657,7 @@ export async function deleteHeroSlideGroup(formData: FormData) {
 }
 
 export async function activateHeroSlideGroup(id: number) {
+  await requireAuth();
   // Deactivate all groups, then activate this one
   await prisma.heroSlideGroup.updateMany({ data: { active: false } });
   const group = await prisma.heroSlideGroup.update({
@@ -633,6 +674,7 @@ export async function activateHeroSlideGroup(id: number) {
 // ──────────────────────────────────────────
 
 export async function createHeroSlide(formData: FormData): Promise<ActionResult> {
+  await requireAuth();
   const subtitle = (formData.get("subtitle") as string)?.trim() || "";
   const title = (formData.get("title") as string)?.trim();
   const bgImage = (formData.get("bgImage") as string)?.trim() || "";
@@ -660,6 +702,7 @@ export async function createHeroSlide(formData: FormData): Promise<ActionResult>
 }
 
 export async function updateHeroSlide(formData: FormData): Promise<ActionResult> {
+  await requireAuth();
   const id = parseInt(formData.get("id") as string);
   const subtitle = (formData.get("subtitle") as string)?.trim() || "";
   const title = (formData.get("title") as string)?.trim();
@@ -689,6 +732,7 @@ export async function updateHeroSlide(formData: FormData): Promise<ActionResult>
 }
 
 export async function deleteHeroSlide(formData: FormData) {
+  await requireAuth();
   const id = parseInt(formData.get("id") as string);
   const slide = await prisma.heroSlide.findUnique({ where: { id } });
   await prisma.heroSlide.delete({ where: { id } });
@@ -698,6 +742,7 @@ export async function deleteHeroSlide(formData: FormData) {
 }
 
 export async function bulkDeleteHeroSlides(ids: number[]) {
+  await requireAuth();
   await prisma.heroSlide.deleteMany({ where: { id: { in: ids } } });
   await logActivity("bulk_delete", "hero_slide", undefined, undefined, `${ids.length} items`);
   revalidatePath("/admin/hero-slides");
@@ -705,6 +750,7 @@ export async function bulkDeleteHeroSlides(ids: number[]) {
 }
 
 export async function toggleHeroSlideActive(id: number) {
+  await requireAuth();
   const slide = await prisma.heroSlide.findUnique({ where: { id } });
   if (!slide) return;
   const newActive = !slide.active;
@@ -722,6 +768,7 @@ export async function toggleHeroSlideActive(id: number) {
 // ──────────────────────────────────────────
 
 export async function createBrandPartner(formData: FormData): Promise<ActionResult> {
+  await requireAuth();
   const name = (formData.get("name") as string)?.trim();
   const logoImage = (formData.get("logoImage") as string)?.trim() || "";
   const url = (formData.get("url") as string)?.trim() || "";
@@ -743,6 +790,7 @@ export async function createBrandPartner(formData: FormData): Promise<ActionResu
 }
 
 export async function updateBrandPartner(formData: FormData): Promise<ActionResult> {
+  await requireAuth();
   const id = parseInt(formData.get("id") as string);
   const name = (formData.get("name") as string)?.trim();
   const logoImage = (formData.get("logoImage") as string)?.trim() || "";
@@ -766,6 +814,7 @@ export async function updateBrandPartner(formData: FormData): Promise<ActionResu
 }
 
 export async function deleteBrandPartner(formData: FormData) {
+  await requireAuth();
   const id = parseInt(formData.get("id") as string);
   const brand = await prisma.brandPartner.findUnique({ where: { id } });
   await prisma.brandPartner.delete({ where: { id } });
@@ -775,6 +824,7 @@ export async function deleteBrandPartner(formData: FormData) {
 }
 
 export async function bulkDeleteBrandPartners(ids: number[]) {
+  await requireAuth();
   await prisma.brandPartner.deleteMany({ where: { id: { in: ids } } });
   await logActivity("bulk_delete", "brand_partner", undefined, undefined, `${ids.length} items`);
   revalidatePath("/admin/brand-partners");
@@ -786,6 +836,7 @@ export async function bulkDeleteBrandPartners(ids: number[]) {
 // ──────────────────────────────────────────
 
 export async function createGalleryItem(formData: FormData): Promise<ActionResult> {
+  await requireAuth();
   const image = (formData.get("image") as string)?.trim() || "";
   const caption = (formData.get("caption") as string)?.trim() || "";
   const platform = (formData.get("platform") as string)?.trim() || "instagram";
@@ -808,6 +859,7 @@ export async function createGalleryItem(formData: FormData): Promise<ActionResul
 }
 
 export async function updateGalleryItem(formData: FormData): Promise<ActionResult> {
+  await requireAuth();
   const id = parseInt(formData.get("id") as string);
   const image = (formData.get("image") as string)?.trim() || "";
   const caption = (formData.get("caption") as string)?.trim() || "";
@@ -832,6 +884,7 @@ export async function updateGalleryItem(formData: FormData): Promise<ActionResul
 }
 
 export async function deleteGalleryItem(formData: FormData) {
+  await requireAuth();
   const id = parseInt(formData.get("id") as string);
   const item = await prisma.galleryItem.findUnique({ where: { id } });
   await prisma.galleryItem.delete({ where: { id } });
@@ -841,6 +894,7 @@ export async function deleteGalleryItem(formData: FormData) {
 }
 
 export async function bulkDeleteGalleryItems(ids: number[]) {
+  await requireAuth();
   await prisma.galleryItem.deleteMany({ where: { id: { in: ids } } });
   await logActivity("bulk_delete", "gallery_item", undefined, undefined, `${ids.length} items`);
   revalidatePath("/admin/gallery");
@@ -852,6 +906,7 @@ export async function bulkDeleteGalleryItems(ids: number[]) {
 // ──────────────────────────────────────────
 
 export async function createPromoItem(formData: FormData): Promise<ActionResult> {
+  await requireAuth();
   const title = (formData.get("title") as string)?.trim();
   const description = (formData.get("description") as string)?.trim() || "";
   const image = (formData.get("image") as string)?.trim() || "";
@@ -875,6 +930,7 @@ export async function createPromoItem(formData: FormData): Promise<ActionResult>
 }
 
 export async function updatePromoItem(formData: FormData): Promise<ActionResult> {
+  await requireAuth();
   const id = parseInt(formData.get("id") as string);
   const title = (formData.get("title") as string)?.trim();
   const description = (formData.get("description") as string)?.trim() || "";
@@ -900,6 +956,7 @@ export async function updatePromoItem(formData: FormData): Promise<ActionResult>
 }
 
 export async function deletePromoItem(formData: FormData) {
+  await requireAuth();
   const id = parseInt(formData.get("id") as string);
   const item = await prisma.promoItem.findUnique({ where: { id } });
   await prisma.promoItem.delete({ where: { id } });
@@ -909,6 +966,7 @@ export async function deletePromoItem(formData: FormData) {
 }
 
 export async function bulkDeletePromoItems(ids: number[]) {
+  await requireAuth();
   await prisma.promoItem.deleteMany({ where: { id: { in: ids } } });
   await logActivity("bulk_delete", "promo_item", undefined, undefined, `${ids.length} items`);
   revalidatePath("/admin/promo");
@@ -920,6 +978,7 @@ export async function bulkDeletePromoItems(ids: number[]) {
 // ──────────────────────────────────────────
 
 export async function createEventItem(formData: FormData): Promise<ActionResult> {
+  await requireAuth();
   const title = (formData.get("title") as string)?.trim();
   const description = (formData.get("description") as string)?.trim() || "";
   const image = (formData.get("image") as string)?.trim() || "";
@@ -945,6 +1004,7 @@ export async function createEventItem(formData: FormData): Promise<ActionResult>
 }
 
 export async function updateEventItem(formData: FormData): Promise<ActionResult> {
+  await requireAuth();
   const id = parseInt(formData.get("id") as string);
   const title = (formData.get("title") as string)?.trim();
   const description = (formData.get("description") as string)?.trim() || "";
@@ -972,6 +1032,7 @@ export async function updateEventItem(formData: FormData): Promise<ActionResult>
 }
 
 export async function deleteEventItem(formData: FormData) {
+  await requireAuth();
   const id = parseInt(formData.get("id") as string);
   const item = await prisma.eventItem.findUnique({ where: { id } });
   await prisma.eventItem.delete({ where: { id } });
@@ -981,6 +1042,7 @@ export async function deleteEventItem(formData: FormData) {
 }
 
 export async function bulkDeleteEventItems(ids: number[]) {
+  await requireAuth();
   await prisma.eventItem.deleteMany({ where: { id: { in: ids } } });
   await logActivity("bulk_delete", "event_item", undefined, undefined, `${ids.length} items`);
   revalidatePath("/admin/events");

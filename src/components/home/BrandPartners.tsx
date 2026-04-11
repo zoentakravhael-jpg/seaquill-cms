@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import type { SwiperClass } from "swiper/react";
+import Image from "next/image";
 
 import "swiper/css";
 
@@ -95,8 +96,8 @@ export default function BrandPartners({
               <SwiperSlide key={`${brand.id}-${idx}`}>
                 <div className="brand-item">
                   <a href={brand.url || "#"} target={brand.url ? "_blank" : undefined} rel={brand.url ? "noopener noreferrer" : undefined}>
-                    <img className="original" src={brand.logoImage} alt={brand.name} />
-                    <img className="gray" src={brand.logoImage} alt={brand.name} />
+                    <Image className="original" src={brand.logoImage} alt={brand.name} width={200} height={80} />
+                    <Image className="gray" src={brand.logoImage} alt={brand.name} width={200} height={80} />
                   </a>
                 </div>
               </SwiperSlide>

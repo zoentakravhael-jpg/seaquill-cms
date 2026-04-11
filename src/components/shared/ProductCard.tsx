@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 interface ProductCardProps {
   name: string;
@@ -27,7 +28,7 @@ export default function ProductCard({ name, image, slug, isBestSeller, isNew }: 
               )}
             </div>
           )}
-          {image && <img src={image} alt="Product Image" />}
+          {image && <Image src={image} alt={name} width={600} height={400} sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />}
           <div className="actions">
             <a href="#QuickView" className="icon-btn popup-content">
               <i className="far fa-eye"></i>

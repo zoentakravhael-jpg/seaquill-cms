@@ -95,7 +95,7 @@ export default function MediaLibraryClient({ files: initialFiles }: { files: Med
         <input
           ref={fileRef}
           type="file"
-          accept="image/*"
+          accept="image/*,video/*"
           multiple
           onChange={(e) => {
             if (e.target.files?.length) handleUpload(e.target.files);
@@ -148,11 +148,15 @@ export default function MediaLibraryClient({ files: initialFiles }: { files: Med
                       overflow: "hidden",
                     }}
                   >
-                    <img
-                      src={file.url}
-                      alt={file.alt || file.filename}
-                      style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
-                    />
+                    {file.mimeType?.startsWith("video/") ? (
+                      <video src={file.url} muted style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
+                    ) : (
+                      <img
+                        src={file.url}
+                        alt={file.alt || file.filename}
+                        style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
+                      />
+                    )}
                   </div>
                   <div style={{ padding: "8px 10px" }}>
                     <p
@@ -203,11 +207,15 @@ export default function MediaLibraryClient({ files: initialFiles }: { files: Med
                   overflow: "hidden",
                 }}
               >
-                <img
-                  src={selectedFile.url}
-                  alt={selectedFile.alt || selectedFile.filename}
-                  style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
-                />
+                {selectedFile.mimeType?.startsWith("video/") ? (
+                  <video src={selectedFile.url} controls style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
+                ) : (
+                  <img
+                    src={selectedFile.url}
+                    alt={selectedFile.alt || selectedFile.filename}
+                    style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
+                  />
+                )}
               </div>
               <div style={{ fontSize: 13, display: "flex", flexDirection: "column", gap: 8 }}>
                 <div>

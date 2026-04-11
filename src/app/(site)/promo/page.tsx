@@ -1,5 +1,16 @@
+import type { Metadata } from "next";
 import Breadcrumb from "@/components/layout/Breadcrumb";
 import { prisma } from "@/lib/prisma";
+
+export const metadata: Metadata = {
+  title: "Promo & Event | Sea-Quill Indonesia",
+  description: "Temukan promo terbaru dan event menarik dari Sea-Quill. Dapatkan penawaran terbaik untuk produk suplemen kesehatan berkualitas.",
+  openGraph: {
+    title: "Promo & Event | Sea-Quill Indonesia",
+    description: "Temukan promo terbaru dan event menarik dari Sea-Quill.",
+    type: "website",
+  },
+};
 
 export default async function PromoPage() {
   const [promos, events] = await Promise.all([

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 interface AboutData {
   subTitle: string;
@@ -29,7 +30,7 @@ export default function AboutSection({ data }: { data: AboutData }) {
             <div className="img-box1">
               <div className="about-wrapper">
                 <div className="img1">
-                  <img src={data.image1} alt="About" />
+                  <Image src={data.image1} alt="About" width={600} height={400} sizes="(max-width: 768px) 100vw, 50vw" />
                   <a href="" className="">
                     <i className=""></i>
                   </a>
@@ -72,10 +73,10 @@ export default function AboutSection({ data }: { data: AboutData }) {
             <div className="img-box2">
               <div className="img-box-wrapp">
                 <div className="img1">
-                  <img src={data.image2} alt="About" />
+                  <Image src={data.image2} alt="About" width={400} height={500} sizes="25vw" />
                 </div>
                 <div className="img2">
-                  <img src={data.image3} alt="About" />
+                  <Image src={data.image3} alt="About" width={400} height={500} sizes="25vw" />
                 </div>
               </div>
             </div>

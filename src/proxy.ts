@@ -7,7 +7,7 @@ const encodedKey = new TextEncoder().encode(secretKey);
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Only protect /admin routes (not login page or API)
+  // Public paths that don't need auth
   if (
     pathname.startsWith("/admin/login") ||
     pathname.startsWith("/api/admin/login")
@@ -15,9 +15,20 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Protect both admin pages and admin API routes
+  const isAdminPage = pathname.startsWith("/admin");
+  const isAdminApi = pathname.startsWith("/api/admin");
+
+  if (!isAdminPage && !isAdminApi) {
+    return NextResponse.next();
+  }
+
   const session = request.cookies.get("admin_session")?.value;
 
   if (!session) {
+    if (isAdminApi) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     return NextResponse.redirect(new URL("/admin/login", request.url));
   }
 
@@ -25,10 +36,13 @@ export async function proxy(request: NextRequest) {
     await jwtVerify(session, encodedKey, { algorithms: ["HS256"] });
     return NextResponse.next();
   } catch {
+    if (isAdminApi) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     return NextResponse.redirect(new URL("/admin/login", request.url));
   }
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/api/admin/:path*"],
 };

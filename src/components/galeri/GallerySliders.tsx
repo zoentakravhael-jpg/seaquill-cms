@@ -2,6 +2,7 @@
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
+import Image from "next/image";
 
 interface GalleryItemData {
   id: number;
@@ -58,9 +59,9 @@ export default function GallerySliders({ sections }: { sections: GallerySectionD
                             className="box-btn"
                             rel="noopener noreferrer"
                           >
-                            <img src={section.icon} alt="" />
+                            <Image src={section.icon} alt="" width={24} height={24} />
                           </a>
-                          <img src={item.image} alt={item.caption || "Gallery"} />
+                          <Image src={item.image} alt={item.caption || "Gallery"} width={400} height={400} sizes="(max-width: 576px) 100vw, (max-width: 768px) 50vw, 25vw" />
                         </div>
                       </SwiperSlide>
                     ))}

@@ -1,7 +1,7 @@
 "use client";
 
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
+import { Navigation, Autoplay } from "swiper/modules";
 
 interface ProjectItem {
   img: string;
@@ -16,6 +16,10 @@ interface ProjectSliderData {
   paragraph?: string;
   sideParagraph?: string;
   items?: ProjectItem[];
+  autoplay?: boolean;
+  autoplayDelay?: number;
+  loop?: boolean;
+  speed?: number;
 }
 
 export default function TentangProjectSlider({ data }: { data: ProjectSliderData }) {
@@ -51,9 +55,17 @@ export default function TentangProjectSlider({ data }: { data: ProjectSliderData
         <div className="slider-area">
           <div style={{ position: "relative" }}>
             <Swiper
-              modules={[Navigation]}
-              loop={true}
+              modules={[Navigation, Autoplay]}
+              loop={data.loop !== false}
               spaceBetween={56}
+              speed={data.speed || 600}
+              {...(data.autoplay !== false ? {
+                autoplay: {
+                  delay: data.autoplayDelay || 3000,
+                  disableOnInteraction: false,
+                  pauseOnMouseEnter: true,
+                },
+              } : {})}
               navigation={{
                 prevEl: ".project-slider-prev",
                 nextEl: ".project-slider-next",

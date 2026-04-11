@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import toast from "react-hot-toast";
+import MediaLibraryModal from "./MediaLibraryModal";
 
 interface ImageUploadProps {
   name: string;
@@ -20,16 +21,18 @@ export default function ImageUpload({
 }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
+  const [showLibrary, setShowLibrary] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleUpload = useCallback(
     async (file: File) => {
-      if (!file.type.startsWith("image/")) {
-        toast.error("File harus berupa gambar");
+      if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) {
+        toast.error("File harus berupa gambar atau video");
         return;
       }
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error("Ukuran file maksimal 5MB");
+      const maxSize = file.type.startsWith("video/") ? 50 * 1024 * 1024 : 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        toast.error(`Ukuran file maksimal ${file.type.startsWith("video/") ? "50MB" : "5MB"}`);
         return;
       }
 
@@ -50,7 +53,7 @@ export default function ImageUpload({
 
         const data = await res.json();
         onChange(data.url);
-        toast.success("Gambar berhasil diupload");
+        toast.success("File berhasil diupload");
       } catch (err) {
         toast.error(err instanceof Error ? err.message : "Upload gagal");
       } finally {
@@ -77,7 +80,11 @@ export default function ImageUpload({
 
       {value ? (
         <div className="admin-upload-preview">
-          <img src={value} alt="Preview" />
+          {/\.(mp4|webm|ogg)$/i.test(value) ? (
+            <video src={value} controls style={{ maxWidth: "100%", maxHeight: 200, borderRadius: 8 }} />
+          ) : (
+            <img src={value} alt="Preview" />
+          )}
           <button
             type="button"
             className="admin-upload-preview-remove"
@@ -86,43 +93,69 @@ export default function ImageUpload({
           >
             <i className="fas fa-times"></i>
           </button>
+          <div className="admin-upload-actions-overlay">
+            <button
+              type="button"
+              className="admin-btn admin-btn-sm admin-btn-secondary"
+              onClick={() => fileRef.current?.click()}
+            >
+              <i className="fas fa-upload"></i> Ganti
+            </button>
+            <button
+              type="button"
+              className="admin-btn admin-btn-sm admin-btn-secondary"
+              onClick={() => setShowLibrary(true)}
+            >
+              <i className="fas fa-images"></i> Library
+            </button>
+          </div>
         </div>
       ) : (
-        <div
-          className={`admin-upload-zone ${dragOver ? "dragover" : ""}`}
-          onClick={() => fileRef.current?.click()}
-          onDragOver={(e) => {
-            e.preventDefault();
-            setDragOver(true);
-          }}
-          onDragLeave={() => setDragOver(false)}
-          onDrop={handleDrop}
-        >
-          {uploading ? (
-            <>
-              <div className="admin-upload-icon">
-                <i className="fas fa-spinner fa-spin"></i>
-              </div>
-              <div className="admin-upload-text">Mengupload...</div>
-            </>
-          ) : (
-            <>
-              <div className="admin-upload-icon">
-                <i className="fas fa-cloud-upload-alt"></i>
-              </div>
-              <div className="admin-upload-text">
-                Drag & drop gambar atau <strong>klik untuk pilih</strong>
-              </div>
-              <div className="admin-upload-hint">PNG, JPG, WebP — Maks 5MB</div>
-            </>
-          )}
+        <div className="admin-upload-dual">
+          <div
+            className={`admin-upload-zone ${dragOver ? "dragover" : ""}`}
+            onClick={() => fileRef.current?.click()}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragOver(true);
+            }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={handleDrop}
+          >
+            {uploading ? (
+              <>
+                <div className="admin-upload-icon">
+                  <i className="fas fa-spinner fa-spin"></i>
+                </div>
+                <div className="admin-upload-text">Mengupload...</div>
+              </>
+            ) : (
+              <>
+                <div className="admin-upload-icon">
+                  <i className="fas fa-cloud-upload-alt"></i>
+                </div>
+                <div className="admin-upload-text">
+                  Drag & drop atau <strong>klik upload</strong>
+                </div>
+                <div className="admin-upload-hint">PNG, JPG, WebP, MP4, WebM — Maks 5MB (gambar) / 50MB (video)</div>
+              </>
+            )}
+          </div>
+          <button
+            type="button"
+            className="admin-upload-library-btn"
+            onClick={() => setShowLibrary(true)}
+          >
+            <i className="fas fa-images"></i>
+            <span>Pilih dari Media Library</span>
+          </button>
         </div>
       )}
 
       <input
         ref={fileRef}
         type="file"
-        accept="image/*"
+        accept="image/*,video/*"
         onChange={(e) => {
           const file = e.target.files?.[0];
           if (file) handleUpload(file);
@@ -143,6 +176,12 @@ export default function ImageUpload({
         />
       </div>
       {hint && <p className="admin-form-hint">{hint}</p>}
+
+      <MediaLibraryModal
+        open={showLibrary}
+        onClose={() => setShowLibrary(false)}
+        onSelect={(url) => onChange(url)}
+      />
     </div>
   );
 }

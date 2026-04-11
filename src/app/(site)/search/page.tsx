@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Breadcrumb from "@/components/layout/Breadcrumb";
 import { prisma } from "@/lib/prisma";
+
+export const metadata: Metadata = {
+  title: "Pencarian | Sea-Quill",
+  description: "Cari produk dan artikel kesehatan Sea-Quill.",
+};
 
 type SearchPageProps = {
   searchParams: Promise<{ q?: string }>;

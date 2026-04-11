@@ -1,10 +1,22 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import Breadcrumb from "@/components/layout/Breadcrumb";
 import ProductGrid from "@/components/shared/ProductGrid";
 import Pagination from "@/components/shared/Pagination";
 import { prisma } from "@/lib/prisma";
 
-export const dynamic = "force-dynamic";
+export const metadata: Metadata = {
+  title: "Produk Sea-Quill | Suplemen Kesehatan Berkualitas",
+  description: "Jelajahi berbagai pilihan suplemen kesehatan Sea-Quill berkualitas premium. Produk bersertifikat BPOM dan Halal untuk kesehatan jantung, kulit, sendi, dan daya tahan tubuh.",
+  openGraph: {
+    title: "Produk Sea-Quill | Suplemen Kesehatan Berkualitas",
+    description: "Jelajahi berbagai pilihan suplemen kesehatan Sea-Quill berkualitas premium.",
+    type: "website",
+  },
+};
+
+export const revalidate = 60;
 
 export default async function ProdukPage() {
   const [categories, products] = await Promise.all([
@@ -52,7 +64,7 @@ export default async function ProdukPage() {
                     <div className="service-card style2">
                       <div className="box-content">
                         <div className="box-icon">
-                          <img src={cat.icon} alt="Icon" />
+                          <Image src={cat.icon} alt={cat.title} width={64} height={64} />
                         </div>
                         <h3 className="box-title">
                           <Link href={`/produk/${cat.slug}`}>{cat.title}</Link>

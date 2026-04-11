@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 interface ContentPreviewProps {
   title: string;
@@ -99,7 +100,7 @@ export default function ContentPreview({
             )}
             <div
               className="admin-preview-content"
-              dangerouslySetInnerHTML={{ __html: content || "<p style='color:var(--admin-text-muted)'>Konten belum diisi</p>" }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(content || "<p style='color:var(--admin-text-muted)'>Konten belum diisi</p>") }}
             />
           </div>
         </div>

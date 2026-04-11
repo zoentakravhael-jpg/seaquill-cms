@@ -1,13 +1,32 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Breadcrumb from "@/components/layout/Breadcrumb";
 import BlogGridCard from "@/components/shared/BlogGridCard";
 import BlogSidebar from "@/components/shared/BlogSidebar";
 import { prisma } from "@/lib/prisma";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 interface Props {
   params: Promise<{ kategori: string }>;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { kategori } = await params;
+  const category = await prisma.blogCategory.findUnique({
+    where: { slug: kategori, deletedAt: null },
+    select: { title: true },
+  });
+  if (!category) return { title: "Kategori Tidak Ditemukan" };
+  return {
+    title: `${category.title} | Artikel Sea-Quill`,
+    description: `Kumpulan artikel tentang ${category.title} dari Sea-Quill. Tips dan informasi kesehatan terpercaya.`,
+    openGraph: {
+      title: `${category.title} | Artikel Sea-Quill`,
+      description: `Kumpulan artikel tentang ${category.title} dari Sea-Quill.`,
+      type: "website",
+    },
+  };
 }
 
 export default async function ArticleCategoryPage({ params }: Props) {

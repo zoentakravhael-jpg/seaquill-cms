@@ -1,6 +1,17 @@
+import type { Metadata } from "next";
 import Breadcrumb from "@/components/layout/Breadcrumb";
 import TentangProjectSlider from "@/components/tentang/TentangProjectSlider";
 import { prisma } from "@/lib/prisma";
+
+export const metadata: Metadata = {
+  title: "Tentang Sea-Quill | Suplemen Kesehatan Terpercaya Sejak 1984",
+  description: "Kenali Sea-Quill lebih dekat. Sejak 1984, kami menyediakan suplemen kesehatan berkualitas premium dengan sertifikasi BPOM dan Halal di Indonesia.",
+  openGraph: {
+    title: "Tentang Sea-Quill | Suplemen Kesehatan Terpercaya",
+    description: "Kenali Sea-Quill lebih dekat. Suplemen kesehatan berkualitas premium sejak 1984.",
+    type: "website",
+  },
+};
 
 async function getSettings(keys: string[]) {
   const rows = await prisma.siteSetting.findMany({
@@ -63,7 +74,17 @@ export default async function TentangPage() {
                   </div>
                 </div>
                 <div className="video-img2 wow fadeInUp">
-                  <img src={about.videoImage || "/assets/img/normal/about-video.jpg"} alt="About" />
+                  {/\.(mp4|webm|ogg)$/i.test(about.videoImage || "") ? (
+                    <video
+                      src={about.videoImage}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                    />
+                  ) : (
+                    <img src={about.videoImage || "/assets/img/normal/about-video.jpg"} alt="About" />
+                  )}
                   <a
                     href={about.videoUrl || "https://www.youtube.com/watch?v=_sI_Ps7JSEk"}
                     className="video-play-btn popup-video"

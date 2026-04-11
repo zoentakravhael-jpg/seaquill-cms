@@ -1,9 +1,20 @@
+import type { Metadata } from "next";
 import Breadcrumb from "@/components/layout/Breadcrumb";
 import BlogGridCard from "@/components/shared/BlogGridCard";
 import BlogSidebar from "@/components/shared/BlogSidebar";
 import { prisma } from "@/lib/prisma";
 
-export const dynamic = "force-dynamic";
+export const metadata: Metadata = {
+  title: "Artikel Kesehatan | Sea-Quill Blog",
+  description: "Baca artikel dan tips kesehatan terpercaya dari Sea-Quill. Informasi lengkap tentang suplemen, nutrisi, dan gaya hidup sehat.",
+  openGraph: {
+    title: "Artikel Kesehatan | Sea-Quill Blog",
+    description: "Baca artikel dan tips kesehatan terpercaya dari Sea-Quill.",
+    type: "website",
+  },
+};
+
+export const revalidate = 60;
 
 export default async function ArtikelPage() {
   const blogPosts = await prisma.blogPost.findMany({

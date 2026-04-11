@@ -42,6 +42,10 @@ interface ProjectSlider {
   paragraph: string;
   sideParagraph: string;
   items: { img: string; title: string; text: string }[];
+  autoplay: boolean;
+  autoplayDelay: number;
+  loop: boolean;
+  speed: number;
 }
 
 function parseJSON<T>(val: string | undefined, fallback: T): T {
@@ -82,6 +86,10 @@ export default function TentangLayoutClient({ settings }: Props) {
       paragraph: "",
       sideParagraph: "",
       items: [],
+      autoplay: true,
+      autoplayDelay: 3000,
+      loop: true,
+      speed: 600,
     })
   );
 
@@ -265,6 +273,40 @@ export default function TentangLayoutClient({ settings }: Props) {
                   <div className="admin-form-group">
                     <label className="admin-form-label">Paragraf Kanan</label>
                     <textarea className="admin-form-textarea" value={project.sideParagraph} onChange={(e) => setProject((p) => ({ ...p, sideParagraph: e.target.value }))} style={{ minHeight: 80 }} />
+                  </div>
+                </div>
+
+                <div className="admin-card" style={{ marginBottom: 16, marginTop: 16 }}>
+                  <div className="admin-card-header"><span className="admin-card-title"><i className="fas fa-cog" style={{ marginRight: 8 }}></i>Konfigurasi Carousel</span></div>
+                  <div className="admin-card-body">
+                    <div className="admin-form-grid admin-form-grid-2">
+                      <div className="admin-form-group">
+                        <label className="admin-form-label">Autoplay</label>
+                        <label className="admin-form-checkbox">
+                          <input type="checkbox" checked={project.autoplay ?? true} onChange={(e) => setProject((p) => ({ ...p, autoplay: e.target.checked }))} />
+                          <span>Aktifkan auto slide</span>
+                        </label>
+                      </div>
+                      <div className="admin-form-group">
+                        <label className="admin-form-label">Loop</label>
+                        <label className="admin-form-checkbox">
+                          <input type="checkbox" checked={project.loop ?? true} onChange={(e) => setProject((p) => ({ ...p, loop: e.target.checked }))} />
+                          <span>Aktifkan looping</span>
+                        </label>
+                      </div>
+                    </div>
+                    <div className="admin-form-grid admin-form-grid-2">
+                      <div className="admin-form-group">
+                        <label className="admin-form-label">Delay Autoplay (ms)</label>
+                        <input type="number" className="admin-form-input" value={project.autoplayDelay ?? 3000} onChange={(e) => setProject((p) => ({ ...p, autoplayDelay: Number(e.target.value) }))} min={500} step={500} />
+                        <small style={{ color: "var(--admin-text-muted)", fontSize: 12 }}>Jeda antar slide dalam milidetik (1000 = 1 detik)</small>
+                      </div>
+                      <div className="admin-form-group">
+                        <label className="admin-form-label">Kecepatan Transisi (ms)</label>
+                        <input type="number" className="admin-form-input" value={project.speed ?? 600} onChange={(e) => setProject((p) => ({ ...p, speed: Number(e.target.value) }))} min={100} step={100} />
+                        <small style={{ color: "var(--admin-text-muted)", fontSize: 12 }}>Kecepatan animasi perpindahan slide</small>
+                      </div>
+                    </div>
                   </div>
                 </div>
 

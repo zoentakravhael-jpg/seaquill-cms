@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 
@@ -34,7 +35,7 @@ export default function RelatedProductsSlider({ products }: RelatedProductsSlide
           <SwiperSlide key={index}>
             <div className="th-product product-grid">
               <div className="product-img">
-                {product.image && <img src={product.image} alt="Product Image" />}
+                {product.image && <Image src={product.image} alt={product.name} width={600} height={400} sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />}
                 <div className="actions">
                   <a href="#QuickView" className="icon-btn popup-content">
                     <i className="far fa-eye"></i>

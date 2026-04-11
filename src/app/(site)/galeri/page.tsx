@@ -1,6 +1,17 @@
+import type { Metadata } from "next";
 import Breadcrumb from "@/components/layout/Breadcrumb";
 import GallerySliders from "@/components/galeri/GallerySliders";
 import { prisma } from "@/lib/prisma";
+
+export const metadata: Metadata = {
+  title: "Galeri Sea-Quill | Foto & Video",
+  description: "Lihat koleksi galeri foto dan video Sea-Quill dari berbagai platform media sosial.",
+  openGraph: {
+    title: "Galeri Sea-Quill | Foto & Video",
+    description: "Lihat koleksi galeri foto dan video Sea-Quill.",
+    type: "website",
+  },
+};
 
 const platformConfig = [
   { platform: "instagram", label: "Instagram", icon: "/assets/img/icon/instagram.svg" },

@@ -295,3 +295,38 @@ model EventItem {
 
   @@map("event_items")
 }
+
+// ──────────────────────────────────────────
+// Form Builder
+// ──────────────────────────────────────────
+
+model Form {
+  id              Int              @id @default(autoincrement())
+  name            String
+  slug            String           @unique
+  description     String           @default("")
+  fields          String           @default("[]") // JSON array of field definitions
+  settings        String           @default("{}") // JSON: submitText, successMessage, notifications
+  status          String           @default("published") // "draft", "published", "archived"
+  submitCount     Int              @default(0)
+  deletedAt       DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  submissions     FormSubmission[]
+
+  @@map("forms")
+}
+
+model FormSubmission {
+  id        Int       @id @default(autoincrement())
+  formId    Int
+  form      Form      @relation(fields: [formId], references: [id], onDelete: Cascade)
+  data      String    @default("{}") // JSON key-value pairs
+  ip        String    @default("")
+  userAgent String    @default("")
+  read      Boolean   @default(false)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@map("form_submissions")
+}

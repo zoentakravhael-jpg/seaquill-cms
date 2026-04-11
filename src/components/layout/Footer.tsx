@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import type { LayoutDataProps } from "@/types/layout";
 
 interface FooterNavLink {
@@ -90,7 +91,7 @@ export default function Footer({
                 <div className="th-widget-about">
                   <div className="about-logo">
                     <Link href="/">
-                      <img src="/assets/img/logo.svg" alt="Seaquill" />
+                      <Image src="/assets/img/logo.svg" alt="Seaquill" width={200} height={60} />
                     </Link>
                   </div>
                   <p className="about-text">
@@ -141,9 +142,6 @@ export default function Footer({
                         {email}
                       </a>
                     </span>
-                  </p>
-                  <p className="footer-info">
-                    <i className="fas fa-map-marker-alt"></i>{address}
                   </p>
                 </div>
               </div>

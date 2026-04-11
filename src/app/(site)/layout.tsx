@@ -1,20 +1,21 @@
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Preloader from "@/components/layout/Preloader";
 import ScrollToTop from "@/components/layout/ScrollToTop";
 import ThemeInitializer from "@/components/layout/ThemeInitializer";
+import AnimationInitializer from "@/components/layout/AnimationInitializer";
 import { getSiteSettings } from "@/lib/site-settings";
 import { prisma } from "@/lib/prisma";
-import type { NavCategory, RecentPost } from "@/types/layout";
+import type { NavCategory, NavProduct, RecentPost } from "@/types/layout";
 
 export default async function SiteLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [siteSettings, productCats, blogCats, latestPosts] = await Promise.all([
+  const [siteSettings, productCats, blogCats, latestPosts, allProducts] = await Promise.all([
     getSiteSettings(),
     prisma.productCategory.findMany({
       where: { deletedAt: null },
@@ -38,10 +39,16 @@ export default async function SiteLayout({
         category: { select: { slug: true } },
       },
     }),
+    prisma.product.findMany({
+      where: { status: "published", deletedAt: null },
+      orderBy: { name: "asc" },
+      select: { id: true, name: true },
+    }),
   ]);
 
   const productCategories: NavCategory[] = productCats;
   const blogCategories: NavCategory[] = blogCats;
+  const products: NavProduct[] = allProducts;
   const recentPosts: RecentPost[] = latestPosts.map((p) => ({
     slug: p.slug,
     title: p.title,
@@ -58,6 +65,7 @@ export default async function SiteLayout({
         productCategories={productCategories}
         blogCategories={blogCategories}
         recentPosts={recentPosts}
+        products={products}
       />
       {children}
       <Footer
@@ -68,6 +76,7 @@ export default async function SiteLayout({
       />
       <ScrollToTop />
       <ThemeInitializer />
+      <AnimationInitializer />
     </>
   );
 }

@@ -1,13 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import LayoutPageEditor, { LayoutSection } from "@/components/admin/LayoutPageEditor";
 import { updateLayoutSettings } from "../../actions";
+import MediaLibraryModal from "@/components/admin/MediaLibraryModal";
+
+interface FormOption {
+  id: number;
+  name: string;
+  slug: string;
+  status: string;
+}
 
 interface Props {
   settings: Record<string, string>;
+  forms: FormOption[];
 }
 
 const tabs = [
@@ -48,6 +57,7 @@ interface ContactSection {
   subTitle: string;
   heading: string;
   paragraph: string;
+  formSlug: string;
 }
 
 function parseJSON<T>(val: string | undefined, fallback: T): T {
@@ -55,7 +65,7 @@ function parseJSON<T>(val: string | undefined, fallback: T): T {
   try { return JSON.parse(val) as T; } catch { return fallback; }
 }
 
-export default function HubungiLayoutClient({ settings }: Props) {
+export default function HubungiLayoutClient({ settings, forms }: Props) {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
 
@@ -89,6 +99,7 @@ export default function HubungiLayoutClient({ settings }: Props) {
       subTitle: "Hubungi Kami",
       heading: "Kirim Pesan untuk Sea-Quill",
       paragraph: "",
+      formSlug: "",
     })
   );
 
@@ -98,6 +109,34 @@ export default function HubungiLayoutClient({ settings }: Props) {
 
   function updateMarketplaceItem(idx: number, field: keyof MarketplaceItem, val: string) {
     setMarketplace((p) => ({ ...p, items: p.items.map((item, i) => (i === idx ? { ...item, [field]: val } : item)) }));
+  }
+
+  const [uploading, setUploading] = useState<string | null>(null);
+  const [mediaLibraryFor, setMediaLibraryFor] = useState<{ type: "social" | "marketplace"; idx: number } | null>(null);
+  const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+
+  const handleIconUpload = useCallback(async (file: File, type: "social" | "marketplace", idx: number) => {
+    if (!file.type.startsWith("image/")) { toast.error("File harus berupa gambar"); return; }
+    if (file.size > 5 * 1024 * 1024) { toast.error("Ukuran file maksimal 5MB"); return; }
+    const key = `${type}_${idx}`;
+    setUploading(key);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/admin/upload", { method: "POST", body: formData });
+      if (!res.ok) { const d = await res.json(); throw new Error(d.error || "Upload gagal"); }
+      const data = await res.json();
+      if (type === "social") updateSocialItem(idx, "icon", data.url);
+      else updateMarketplaceItem(idx, "icon", data.url);
+      toast.success("Icon berhasil diupload");
+    } catch (err) { toast.error(err instanceof Error ? err.message : "Upload gagal"); }
+    finally { setUploading(null); }
+  }, []);
+
+  function handleMediaSelect(url: string) {
+    if (!mediaLibraryFor) return;
+    if (mediaLibraryFor.type === "social") updateSocialItem(mediaLibraryFor.idx, "icon", url);
+    else updateMarketplaceItem(mediaLibraryFor.idx, "icon", url);
   }
 
   async function handleSave() {
@@ -127,6 +166,7 @@ export default function HubungiLayoutClient({ settings }: Props) {
   );
 
   return (
+    <>
     <LayoutPageEditor
       pageTitle="Hubungi Kami"
       pageSubtitle="Kelola konten halaman kontak"
@@ -171,7 +211,21 @@ export default function HubungiLayoutClient({ settings }: Props) {
                           </div>
                           <div className="admin-form-group">
                             <label className="admin-form-label">Icon Path</label>
-                            <input className="admin-form-input" value={item.icon} onChange={(e) => updateSocialItem(idx, "icon", e.target.value)} />
+                            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                              {item.icon && (
+                                <div style={{ width: 36, height: 36, borderRadius: 6, border: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "center", background: "#f8fafc", flexShrink: 0 }}>
+                                  <img src={item.icon} alt="icon" style={{ width: 24, height: 24, objectFit: "contain" }} />
+                                </div>
+                              )}
+                              <input className="admin-form-input" value={item.icon} onChange={(e) => updateSocialItem(idx, "icon", e.target.value)} style={{ flex: 1 }} />
+                              <input type="file" accept="image/*" ref={(el) => { fileInputRefs.current[`social_${idx}`] = el; }} style={{ display: "none" }} onChange={(e) => { const f = e.target.files?.[0]; if (f) handleIconUpload(f, "social", idx); e.target.value = ""; }} />
+                              <button type="button" className="admin-btn admin-btn-secondary admin-btn-sm" onClick={() => fileInputRefs.current[`social_${idx}`]?.click()} disabled={uploading === `social_${idx}`} style={{ whiteSpace: "nowrap" }}>
+                                {uploading === `social_${idx}` ? <><i className="fas fa-spinner fa-spin"></i></> : <><i className="fas fa-upload"></i> Upload</>}
+                              </button>
+                              <button type="button" className="admin-btn admin-btn-secondary admin-btn-sm" onClick={() => setMediaLibraryFor({ type: "social", idx })} style={{ whiteSpace: "nowrap" }}>
+                                <i className="fas fa-photo-video"></i> Library
+                              </button>
+                            </div>
                           </div>
                         </div>
                         <div className="admin-form-group">
@@ -233,7 +287,21 @@ export default function HubungiLayoutClient({ settings }: Props) {
                           </div>
                           <div className="admin-form-group">
                             <label className="admin-form-label">Icon Path</label>
-                            <input className="admin-form-input" value={item.icon} onChange={(e) => updateMarketplaceItem(idx, "icon", e.target.value)} />
+                            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                              {item.icon && (
+                                <div style={{ width: 36, height: 36, borderRadius: 6, border: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "center", background: "#f8fafc", flexShrink: 0 }}>
+                                  <img src={item.icon} alt="icon" style={{ width: 24, height: 24, objectFit: "contain" }} />
+                                </div>
+                              )}
+                              <input className="admin-form-input" value={item.icon} onChange={(e) => updateMarketplaceItem(idx, "icon", e.target.value)} style={{ flex: 1 }} />
+                              <input type="file" accept="image/*" ref={(el) => { fileInputRefs.current[`marketplace_${idx}`] = el; }} style={{ display: "none" }} onChange={(e) => { const f = e.target.files?.[0]; if (f) handleIconUpload(f, "marketplace", idx); e.target.value = ""; }} />
+                              <button type="button" className="admin-btn admin-btn-secondary admin-btn-sm" onClick={() => fileInputRefs.current[`marketplace_${idx}`]?.click()} disabled={uploading === `marketplace_${idx}`} style={{ whiteSpace: "nowrap" }}>
+                                {uploading === `marketplace_${idx}` ? <><i className="fas fa-spinner fa-spin"></i></> : <><i className="fas fa-upload"></i> Upload</>}
+                              </button>
+                              <button type="button" className="admin-btn admin-btn-secondary admin-btn-sm" onClick={() => setMediaLibraryFor({ type: "marketplace", idx })} style={{ whiteSpace: "nowrap" }}>
+                                <i className="fas fa-photo-video"></i> Library
+                              </button>
+                            </div>
                           </div>
                         </div>
                         <div className="admin-form-group">
@@ -267,7 +335,7 @@ export default function HubungiLayoutClient({ settings }: Props) {
                 icon="fas fa-envelope"
                 iconColor="#3B82F6"
                 badge={{ type: "json", label: "JSON Setting" }}
-                info="Heading dan deskripsi di atas form kontak. Form kontak mengirim pesan ke <strong>Pesan Masuk</strong> di admin."
+                info="Heading dan deskripsi di atas form kontak. Pilih form dari Form Builder atau gunakan form default."
               >
                 <div className="admin-form-grid admin-form-grid-2">
                   <div className="admin-form-group">
@@ -283,6 +351,46 @@ export default function HubungiLayoutClient({ settings }: Props) {
                   <label className="admin-form-label">Paragraf</label>
                   <textarea className="admin-form-textarea" value={contact.paragraph} onChange={(e) => setContact((p) => ({ ...p, paragraph: e.target.value }))} style={{ minHeight: 80 }} />
                 </div>
+
+                {/* Form Selector */}
+                <div className="admin-form-group" style={{ marginTop: 16 }}>
+                  <label className="admin-form-label">
+                    <i className="fas fa-wpforms" style={{ marginRight: 6, color: "#8B5CF6" }}></i>
+                    Pilih Form
+                  </label>
+                  <select
+                    className="admin-form-input"
+                    value={contact.formSlug || ""}
+                    onChange={(e) => setContact((p) => ({ ...p, formSlug: e.target.value }))}
+                  >
+                    <option value="">Form Default (bawaan)</option>
+                    {forms.map((f) => (
+                      <option key={f.id} value={f.slug}>
+                        {f.name} {f.status !== "published" ? `(${f.status})` : ""}
+                      </option>
+                    ))}
+                  </select>
+                  <small style={{ color: "#94A3B8", fontSize: 12, marginTop: 4, display: "block" }}>
+                    Pilih form kustom dari Form Builder, atau kosongkan untuk menggunakan form kontak bawaan.
+                    {contact.formSlug && (
+                      <> Form terpilih: <strong>{contact.formSlug}</strong></>
+                    )}
+                  </small>
+                </div>
+
+                {contact.formSlug && (
+                  <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
+                    <a href={`/admin/form-builder/edit/${forms.find((f) => f.slug === contact.formSlug)?.id || ""}`} className="admin-btn admin-btn-secondary admin-btn-sm" target="_blank">
+                      <i className="fas fa-edit"></i> Edit Form
+                    </a>
+                    <a href={`/admin/form-builder/preview/${forms.find((f) => f.slug === contact.formSlug)?.id || ""}`} className="admin-btn admin-btn-secondary admin-btn-sm" target="_blank">
+                      <i className="fas fa-eye"></i> Preview
+                    </a>
+                    <a href={`/admin/form-builder/submissions/${forms.find((f) => f.slug === contact.formSlug)?.id || ""}`} className="admin-btn admin-btn-secondary admin-btn-sm" target="_blank">
+                      <i className="fas fa-inbox"></i> Submissions
+                    </a>
+                  </div>
+                )}
               </LayoutSection>
               {saveBtn}
             </>
@@ -290,5 +398,17 @@ export default function HubungiLayoutClient({ settings }: Props) {
         </>
       )}
     </LayoutPageEditor>
+
+    {mediaLibraryFor && (
+      <MediaLibraryModal
+        open={true}
+        onClose={() => setMediaLibraryFor(null)}
+        onSelect={(url) => {
+          handleMediaSelect(url);
+          setMediaLibraryFor(null);
+        }}
+      />
+    )}
+    </>
   );
 }

@@ -5,6 +5,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
 import type { SwiperClass } from "swiper/react";
 import Link from "next/link";
+import Image from "next/image";
 
 import "swiper/css";
 import "swiper/css/navigation";
@@ -146,7 +147,7 @@ export default function ProductSlider({
                         )}
                       </div>
                     )}
-                    <img src={product.image} alt={product.name} />
+                    <Image src={product.image} alt={product.name} width={600} height={400} sizes="(max-width: 768px) 100vw, (max-width: 992px) 50vw, 33vw" />
                   </div>
                   <div className="box-content">
                     <h3 className="box-title">

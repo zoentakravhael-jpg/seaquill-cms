@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import type { LayoutDataProps } from "@/types/layout";
+import Image from "next/image";
+import type { LayoutDataProps, NavProduct } from "@/types/layout";
 import type { NavItem } from "@/types/layout";
 
 export default function Header({
@@ -11,11 +12,16 @@ export default function Header({
   productCategories,
   blogCategories,
   recentPosts,
-}: LayoutDataProps) {
+  products = [],
+}: LayoutDataProps & { products?: NavProduct[] }) {
   const [sideMenuOpen, setSideMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [openSubmenus, setOpenSubmenus] = useState<number[]>([]);
+  const [connectOpen, setConnectOpen] = useState(false);
+  const [connectForm, setConnectForm] = useState({ name: "", email: "", phone: "", productName: "", message: "" });
+  const [connectStatus, setConnectStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [connectError, setConnectError] = useState("");
   const router = useRouter();
 
   // Build navigation dynamically from DB nav_menu setting
@@ -107,6 +113,31 @@ export default function Header({
     }
   }, [s.header_badges]);
 
+  async function handleConnectSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setConnectStatus("loading");
+    setConnectError("");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...connectForm, subject: connectForm.productName ? `Connect To Us — Produk: ${connectForm.productName}` : "Connect To Us", source: "contact" }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setConnectError(data.error || "Terjadi kesalahan.");
+        setConnectStatus("error");
+      } else {
+        setConnectStatus("success");
+        setConnectForm({ name: "", email: "", phone: "", productName: "", message: "" });
+        setTimeout(() => { setConnectOpen(false); setConnectStatus("idle"); }, 3000);
+      }
+    } catch {
+      setConnectError("Gagal mengirim pesan. Coba lagi.");
+      setConnectStatus("error");
+    }
+  }
+
   function handleSearch(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
@@ -171,7 +202,7 @@ export default function Header({
                 <div className="recent-post" key={i}>
                   <div className="media-img">
                     <Link href={post.href}>
-                      <img src={post.image} alt="Blog Image" />
+                      <Image src={post.image} alt={post.title} width={100} height={100} />
                     </Link>
                   </div>
                   <div className="media-body">
@@ -204,6 +235,193 @@ export default function Header({
         </div>
       </div>
 
+      {/* Connect To Us Modal */}
+      {connectOpen && (
+        <div
+          style={{
+            position: "fixed", inset: 0,
+            background: "rgba(0,0,0,0.55)",
+            backdropFilter: "blur(6px)",
+            WebkitBackdropFilter: "blur(6px)",
+            zIndex: 99999, display: "flex", alignItems: "center",
+            justifyContent: "center", padding: "20px",
+          }}
+          onClick={(e) => { if (e.target === e.currentTarget) setConnectOpen(false); }}
+        >
+          <div style={{
+            background: "#fff", borderRadius: "20px", width: "100%",
+            maxWidth: "660px", overflow: "hidden", position: "relative",
+            boxShadow: "0 32px 80px rgba(0,0,0,0.3)",
+          }}>
+            {/* Gradient header strip */}
+            <div style={{
+              background: "linear-gradient(135deg, #d97706 0%, #ea8b12 50%, #f59e0b 100%)",
+              padding: "26px 32px 22px",
+              position: "relative",
+            }}>
+              <button
+                onClick={() => setConnectOpen(false)}
+                style={{
+                  position: "absolute", top: "14px", right: "18px",
+                  background: "rgba(255,255,255,0.2)", border: "1px solid rgba(255,255,255,0.3)",
+                  borderRadius: "50%", width: "32px", height: "32px",
+                  cursor: "pointer", color: "#fff", fontSize: "14px",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  backdropFilter: "blur(4px)",
+                }}
+              >
+                <i className="fal fa-times"></i>
+              </button>
+              <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                <div style={{
+                  background: "rgba(255,255,255,0.22)", borderRadius: "12px",
+                  width: "48px", height: "48px", display: "flex",
+                  alignItems: "center", justifyContent: "center", flexShrink: 0,
+                }}>
+                  <i className="fa-solid fa-paper-plane" style={{ color: "#fff", fontSize: "20px" }}></i>
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: "20px", fontWeight: 700, color: "#fff", letterSpacing: "-0.3px" }}>Connect To Us</h3>
+                  <p style={{ margin: 0, color: "rgba(255,255,255,0.85)", fontSize: "13px", marginTop: "2px" }}>Isi form berikut &amp; tim kami akan segera menghubungi Anda</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Form body */}
+            <div style={{ padding: "28px 32px 32px" }}>
+              {connectStatus === "success" ? (
+                <div style={{ textAlign: "center", padding: "32px 0" }}>
+                  <div style={{
+                    width: "70px", height: "70px", borderRadius: "50%",
+                    background: "linear-gradient(135deg, #22c55e, #16a34a)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    margin: "0 auto 16px",
+                    boxShadow: "0 8px 24px rgba(34,197,94,0.35)",
+                  }}>
+                    <i className="fa-solid fa-check" style={{ fontSize: "28px", color: "#fff" }}></i>
+                  </div>
+                  <p style={{ fontWeight: 700, fontSize: "18px", margin: "0 0 8px", color: "#1a1a1a" }}>Pesan Terkirim!</p>
+                  <p style={{ color: "#6b7280", fontSize: "14px", margin: 0 }}>Terima kasih! Kami akan menghubungi Anda segera.</p>
+                </div>
+              ) : (
+                <form onSubmit={handleConnectSubmit} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                  {/* Row 1: Name + Email */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+                      <label style={{ fontSize: "12px", fontWeight: 600, color: "#374151", textTransform: "uppercase", letterSpacing: "0.5px" }}>Nama <span style={{ color: "#ea8b12" }}>*</span></label>
+                      <input
+                        type="text"
+                        placeholder="Nama lengkap Anda"
+                        value={connectForm.name}
+                        onChange={(e) => setConnectForm(f => ({ ...f, name: e.target.value }))}
+                        required
+                        style={{ padding: "10px 14px", border: "1.5px solid #e5e7eb", borderRadius: "10px", fontSize: "14px", outline: "none", width: "100%", boxSizing: "border-box", transition: "border-color 0.2s", color: "#1a1a1a" }}
+                        onFocus={(e) => e.target.style.borderColor = "#ea8b12"}
+                        onBlur={(e) => e.target.style.borderColor = "#e5e7eb"}
+                      />
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+                      <label style={{ fontSize: "12px", fontWeight: 600, color: "#374151", textTransform: "uppercase", letterSpacing: "0.5px" }}>Email <span style={{ color: "#ea8b12" }}>*</span></label>
+                      <input
+                        type="email"
+                        placeholder="email@contoh.com"
+                        value={connectForm.email}
+                        onChange={(e) => setConnectForm(f => ({ ...f, email: e.target.value }))}
+                        required
+                        style={{ padding: "10px 14px", border: "1.5px solid #e5e7eb", borderRadius: "10px", fontSize: "14px", outline: "none", width: "100%", boxSizing: "border-box", transition: "border-color 0.2s", color: "#1a1a1a" }}
+                        onFocus={(e) => e.target.style.borderColor = "#ea8b12"}
+                        onBlur={(e) => e.target.style.borderColor = "#e5e7eb"}
+                      />
+                    </div>
+                  </div>
+                  {/* Row 2: Phone + Product */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+                      <label style={{ fontSize: "12px", fontWeight: 600, color: "#374151", textTransform: "uppercase", letterSpacing: "0.5px" }}>Nomor HP</label>
+                      <input
+                        type="tel"
+                        placeholder="+62 8xx-xxxx-xxxx"
+                        value={connectForm.phone}
+                        onChange={(e) => setConnectForm(f => ({ ...f, phone: e.target.value }))}
+                        style={{ padding: "10px 14px", border: "1.5px solid #e5e7eb", borderRadius: "10px", fontSize: "14px", outline: "none", width: "100%", boxSizing: "border-box", transition: "border-color 0.2s", color: "#1a1a1a" }}
+                        onFocus={(e) => e.target.style.borderColor = "#ea8b12"}
+                        onBlur={(e) => e.target.style.borderColor = "#e5e7eb"}
+                      />
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+                      <label style={{ fontSize: "12px", fontWeight: 600, color: "#374151", textTransform: "uppercase", letterSpacing: "0.5px" }}>Produk Terkait</label>
+                      <select
+                        value={connectForm.productName}
+                        onChange={(e) => setConnectForm(f => ({ ...f, productName: e.target.value }))}
+                        style={{ padding: "10px 14px", border: "1.5px solid #e5e7eb", borderRadius: "10px", fontSize: "14px", outline: "none", width: "100%", boxSizing: "border-box", transition: "border-color 0.2s", color: connectForm.productName ? "#1a1a1a" : "#9ca3af", background: "#fff", cursor: "pointer" }}
+                        onFocus={(e) => e.target.style.borderColor = "#ea8b12"}
+                        onBlur={(e) => e.target.style.borderColor = "#e5e7eb"}
+                      >
+                        <option value="">Pilih produk (opsional)</option>
+                        {products.map((p) => (
+                          <option key={p.id} value={p.name}>{p.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  {/* Message full width */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+                    <label style={{ fontSize: "12px", fontWeight: 600, color: "#374151", textTransform: "uppercase", letterSpacing: "0.5px" }}>Pesan <span style={{ color: "#ea8b12" }}>*</span></label>
+                    <textarea
+                      placeholder="Tuliskan pertanyaan atau kebutuhan Anda..."
+                      value={connectForm.message}
+                      onChange={(e) => setConnectForm(f => ({ ...f, message: e.target.value }))}
+                      required
+                      rows={4}
+                      style={{ padding: "10px 14px", border: "1.5px solid #e5e7eb", borderRadius: "10px", fontSize: "14px", outline: "none", resize: "vertical", width: "100%", boxSizing: "border-box", transition: "border-color 0.2s", color: "#1a1a1a", fontFamily: "inherit" }}
+                      onFocus={(e) => e.target.style.borderColor = "#ea8b12"}
+                      onBlur={(e) => e.target.style.borderColor = "#e5e7eb"}
+                    />
+                  </div>
+                  {connectError && (
+                    <div style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: "8px", padding: "10px 14px", display: "flex", alignItems: "center", gap: "8px" }}>
+                      <i className="fa-solid fa-circle-exclamation" style={{ color: "#ef4444", fontSize: "14px", flexShrink: 0 }}></i>
+                      <p style={{ color: "#dc2626", fontSize: "13px", margin: 0 }}>{connectError}</p>
+                    </div>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={connectStatus === "loading"}
+                    style={{
+                      padding: "13px 20px",
+                      background: connectStatus === "loading" ? "#f5a623" : "linear-gradient(135deg, #d97706, #ea8b12)",
+                      color: "#fff", border: "none", borderRadius: "10px",
+                      fontSize: "15px", fontWeight: 700,
+                      cursor: connectStatus === "loading" ? "wait" : "pointer",
+                      display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
+                      boxShadow: "0 4px 14px rgba(234,139,18,0.4)",
+                      transition: "opacity 0.2s",
+                      opacity: connectStatus === "loading" ? 0.75 : 1,
+                    }}
+                  >
+                    {connectStatus === "loading" ? (
+                      <>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ animation: "spin 1s linear infinite" }}>
+                          <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.4)" strokeWidth="3" />
+                          <path d="M12 2a10 10 0 0 1 10 10" stroke="#fff" strokeWidth="3" strokeLinecap="round" />
+                        </svg>
+                        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+                        Mengirim...
+                      </>
+                    ) : (
+                      <>
+                        <i className="fa-solid fa-paper-plane"></i>
+                        Kirim Pesan
+                      </>
+                    )}
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Search Popup */}
       <div className={`popup-search-box d-none d-lg-block${searchOpen ? " show" : ""}`}>
         <button className="searchClose" onClick={() => setSearchOpen(false)}>
@@ -228,7 +446,7 @@ export default function Header({
           </button>
           <div className="mobile-logo">
             <Link href="/">
-              <img src={headerLogo} alt="Seaquill" />
+              <Image src={headerLogo} alt="Seaquill" width={200} height={60} priority />
             </Link>
           </div>
           <div className="th-mobile-menu">
@@ -287,7 +505,7 @@ export default function Header({
                   <div className="col-auto">
                     <div className="header-logo">
                       <Link href="/">
-                        <img src={headerLogo} alt="Seaquill" style={{ maxHeight: "80px", width: "auto" }} />
+                        <Image src={headerLogo} alt="Seaquill" width={200} height={80} style={{ maxHeight: "80px", width: "auto" }} priority />
                       </Link>
                     </div>
                   </div>
@@ -376,31 +594,26 @@ export default function Header({
                     </div>
                   </div>
                   <div className="col-auto">
-                    <div className="header-button d-none d-lg-block">
-                      <a
-                        href={tokopediaUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ padding: "0 6px" }}
+                    <div className="header-button d-none d-lg-block" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <button
+                        onClick={() => { setConnectOpen(true); setConnectStatus("idle"); setConnectError(""); }}
+                        style={{
+                          display: "inline-flex", alignItems: "center", gap: "6px",
+                          padding: "8px 14px", background: "var(--theme-color, #009f56)",
+                          color: "#fff", border: "none", borderRadius: "6px",
+                          cursor: "pointer", fontSize: "13px", fontWeight: 600, whiteSpace: "nowrap",
+                        }}
                       >
-                        <img
-                          src="/assets/img/tokopedia-btn.png"
-                          alt="Tokopedia"
-                          style={{ height: "30px", width: "auto" }}
-                        />
-                      </a>
-                      <a
-                        href={shopeeUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ padding: "0 6px" }}
+                        <i className="fa-solid fa-envelope"></i>
+                        Connect To Us
+                      </button>
+                      <Link
+                        href="/belanja"
+                        style={{ padding: "0 10px", display: "inline-flex", alignItems: "center", color: "inherit" }}
+                        title="Belanja di Marketplace"
                       >
-                        <img
-                          src="/assets/img/shopee-btn.png"
-                          alt="Shopee"
-                          style={{ height: "20px", width: "auto" }}
-                        />
-                      </a>
+                        <i className="fa-solid fa-cart-shopping" style={{ fontSize: "22px" }}></i>
+                      </Link>
                     </div>
                     <button
                       type="button"

@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import ContactForm from "@/components/shared/ContactForm";
+import DynamicForm from "@/components/shared/DynamicForm";
 
 interface PlatformItem {
   platform: string;
@@ -20,21 +22,26 @@ interface SectionData {
 interface ContactData {
   heading?: string;
   subTitle?: string;
+  formSlug?: string;
 }
 
 interface HubungiKamiClientProps {
   socialSection: SectionData;
   marketplaceSection: SectionData;
   contactSection: ContactData;
+  customForm?: { slug: string; fields: string; settings: string } | null;
 }
 
 export default function HubungiKamiClient({
   socialSection,
   marketplaceSection,
   contactSection,
+  customForm,
 }: HubungiKamiClientProps) {
   const socialItems = socialSection.items || [];
   const marketplaceItems = marketplaceSection.items || [];
+  const [activeSocial, setActiveSocial] = useState(0);
+  const [activeMarket, setActiveMarket] = useState(0);
 
   return (
     <>
@@ -66,14 +73,11 @@ export default function HubungiKamiClient({
             {socialItems.map((item, idx) => (
               <button
                 key={idx}
-                className={`tab-btn${idx === 0 ? " active" : ""}`}
-                id={`nav-social-${idx}-tab`}
-                data-bs-toggle="tab"
-                data-bs-target={`#nav-social-${idx}`}
+                className={`tab-btn${idx === activeSocial ? " active" : ""}`}
                 type="button"
                 role="tab"
-                aria-controls={`nav-social-${idx}`}
-                aria-selected={idx === 0}
+                aria-selected={idx === activeSocial}
+                onClick={() => setActiveSocial(idx)}
               >
                 <div className="box-icon">
                   <img src={item.icon} alt={item.platform} style={{ width: "38px" }} />
@@ -86,10 +90,8 @@ export default function HubungiKamiClient({
             {socialItems.map((item, idx) => (
               <div
                 key={idx}
-                className={`tab-pane fade${idx === 0 ? " show active" : ""}`}
-                id={`nav-social-${idx}`}
+                className={`tab-pane fade${idx === activeSocial ? " show active" : ""}`}
                 role="tabpanel"
-                aria-labelledby={`nav-social-${idx}-tab`}
               >
                 <div
                   className="service-block"
@@ -142,14 +144,11 @@ export default function HubungiKamiClient({
             {marketplaceItems.map((item, idx) => (
               <button
                 key={idx}
-                className={`tab-btn${idx === 0 ? " active" : ""}`}
-                id={`nav-market-${idx}-tab`}
-                data-bs-toggle="tab"
-                data-bs-target={`#nav-market-${idx}`}
+                className={`tab-btn${idx === activeMarket ? " active" : ""}`}
                 type="button"
                 role="tab"
-                aria-controls={`nav-market-${idx}`}
-                aria-selected={idx === 0}
+                aria-selected={idx === activeMarket}
+                onClick={() => setActiveMarket(idx)}
               >
                 <div className="box-icon">
                   <img src={item.icon} alt={item.platform} style={{ width: "38px" }} />
@@ -162,10 +161,8 @@ export default function HubungiKamiClient({
             {marketplaceItems.map((item, idx) => (
               <div
                 key={idx}
-                className={`tab-pane fade${idx === 0 ? " show active" : ""}`}
-                id={`nav-market-${idx}`}
+                className={`tab-pane fade${idx === activeMarket ? " show active" : ""}`}
                 role="tabpanel"
-                aria-labelledby={`nav-market-${idx}-tab`}
               >
                 <div
                   className="service-block"
@@ -199,7 +196,15 @@ export default function HubungiKamiClient({
           </div>
           <div className="row justify-content-center">
             <div className="col-lg-8">
-              <ContactForm />
+              {customForm ? (
+                <DynamicForm
+                  slug={customForm.slug}
+                  fields={(() => { try { return JSON.parse(customForm.fields); } catch { return []; } })()}
+                  settings={(() => { try { return JSON.parse(customForm.settings); } catch { return { submitText: "Kirim Pesan", successMessage: "Pesan berhasil dikirim!", emailNotification: { enabled: false, to: "", subject: "" }, whatsappNotification: { enabled: false, phone: "", message: "" } }; } })()}
+                />
+              ) : (
+                <ContactForm />
+              )}
             </div>
           </div>
         </div>

@@ -1,12 +1,38 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import Breadcrumb from "@/components/layout/Breadcrumb";
 import ProductImageGallery from "@/components/shared/ProductImageGallery";
 import RelatedProductsSlider from "@/components/shared/RelatedProductsSlider";
 import { prisma } from "@/lib/prisma";
 import { getSiteSettings } from "@/lib/site-settings";
+import { sanitizeHtml } from "@/lib/sanitize";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await prisma.product.findFirst({
+    where: { slug, status: "published", deletedAt: null },
+    select: { name: true, shortDescription: true, metaTitle: true, metaDescription: true, ogImage: true, image: true },
+  });
+  if (!product) return { title: "Produk Tidak Ditemukan" };
+  return {
+    title: product.metaTitle || `${product.name} | Sea-Quill`,
+    description: product.metaDescription || product.shortDescription || `Beli ${product.name} dari Sea-Quill. Suplemen kesehatan berkualitas bersertifikat BPOM dan Halal.`,
+    openGraph: {
+      title: product.metaTitle || product.name,
+      description: product.metaDescription || product.shortDescription || "",
+      images: product.ogImage || product.image ? [{ url: product.ogImage || product.image }] : [],
+      type: "website",
+    },
+  };
+}
 
 export default async function ProductDetailPage({
   params,
@@ -41,8 +67,41 @@ export default async function ProductDetailPage({
 
   const ratingPercent = (product.rating / 5) * 100;
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.shortDescription,
+    image: product.images[0] || product.image,
+    sku: product.sku,
+    brand: {
+      "@type": "Brand",
+      name: "Sea-Quill",
+    },
+    category: product.category.title,
+    aggregateRating: product.reviewCount > 0 ? {
+      "@type": "AggregateRating",
+      ratingValue: product.rating,
+      reviewCount: product.reviewCount,
+      bestRating: 5,
+      worstRating: 1,
+    } : undefined,
+    offers: {
+      "@type": "Offer",
+      availability: product.stock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      seller: {
+        "@type": "Organization",
+        name: "Sea-Quill Indonesia",
+      },
+    },
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Breadcrumb title="Shop Details" />
 
       <section className="product-details overflow-hidden space-top space-extra-bottom">
@@ -99,9 +158,11 @@ export default async function ProductDetailPage({
                         rel="noopener noreferrer"
                         style={{ padding: "0 6px" }}
                       >
-                        <img
+                        <Image
                           src="/assets/img/tokopedia-btn.png"
                           alt="Tokopedia"
+                          width={120}
+                          height={45}
                           style={{ height: "45px", width: "auto" }}
                         />
                       </a>
@@ -111,9 +172,11 @@ export default async function ProductDetailPage({
                         rel="noopener noreferrer"
                         style={{ padding: "0 6px" }}
                       >
-                        <img
+                        <Image
                           src="/assets/img/shopee-btn.png"
                           alt="Shopee"
+                          width={100}
+                          height={30}
                           style={{ height: "30px", width: "auto" }}
                         />
                       </a>
@@ -201,7 +264,7 @@ export default async function ProductDetailPage({
               aria-labelledby="description-tab"
             >
               <h3 className="box-title">Deskripsi Produk</h3>
-              <div dangerouslySetInnerHTML={{ __html: product.description }} />
+              <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.description) }} />
             </div>
             <div
               className="tab-pane fade"

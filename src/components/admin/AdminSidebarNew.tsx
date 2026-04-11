@@ -64,6 +64,7 @@ const navSections: NavSection[] = [
     items: [
       { href: "/admin/media", label: "Media Library", icon: "fas fa-images" },
       { href: "/admin/pesan", label: "Pesan Masuk", icon: "fas fa-envelope" },
+      { href: "/admin/form-builder", label: "Form Builder", icon: "fas fa-wpforms" },
     ],
   },
   {

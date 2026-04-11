@@ -4,6 +4,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Thumbs } from "swiper/modules";
 import { useState } from "react";
 import type { Swiper as SwiperType } from "swiper";
+import Image from "next/image";
 
 interface ProductImageGalleryProps {
   images: string[];
@@ -27,7 +28,7 @@ export default function ProductImageGallery({ images }: ProductImageGalleryProps
       >
         {validImages.map((img, index) => (
           <SwiperSlide key={index}>
-            <img src={img} alt="" />
+            <Image src={img} alt="" width={800} height={800} sizes="(max-width: 992px) 100vw, 50vw" priority={index === 0} />
           </SwiperSlide>
         ))}
       </Swiper>
@@ -46,7 +47,7 @@ export default function ProductImageGallery({ images }: ProductImageGalleryProps
       >
         {validImages.map((img, index) => (
           <SwiperSlide key={index}>
-            <img src={img} alt="" />
+            <Image src={img} alt="" width={200} height={200} />
           </SwiperSlide>
         ))}
       </Swiper>

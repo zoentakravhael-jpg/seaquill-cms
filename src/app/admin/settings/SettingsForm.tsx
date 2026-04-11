@@ -4,6 +4,7 @@ import { useState, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { updateSettings } from "../actions";
+import MediaLibraryModal from "@/components/admin/MediaLibraryModal";
 
 interface Badge {
   icon: string;
@@ -123,6 +124,7 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
   const logoInputRef = useRef<HTMLInputElement>(null);
   const logoStickyInputRef = useRef<HTMLInputElement>(null);
   const badgeInputRefs = useRef<Record<number, HTMLInputElement | null>>({});
+  const [mediaLibraryFor, setMediaLibraryFor] = useState<string | null>(null);
 
   async function uploadImage(file: File, onSuccess: (url: string) => void, key: string) {
     setUploading(key);
@@ -321,9 +323,12 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
                 <label className="admin-form-label">Logo Utama (SVG/PNG)</label>
                 <div style={{ display: "flex", gap: 8 }}>
                   <input name="header_logo" value={logoPath} onChange={(e) => setLogoPath(e.target.value)} className="admin-form-input" placeholder="/assets/img/logo.svg" style={{ flex: 1 }} />
-                  <input type="file" accept="image/*" ref={logoInputRef} style={{ display: "none" }} onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadImage(f, setLogoPath, "logo"); e.target.value = ""; }} />
+                  <input type="file" accept="image/*,video/*" ref={logoInputRef} style={{ display: "none" }} onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadImage(f, setLogoPath, "logo"); e.target.value = ""; }} />
                   <button type="button" onClick={() => logoInputRef.current?.click()} disabled={uploading === "logo"} className="admin-btn admin-btn-secondary" style={{ padding: "8px 14px", fontSize: 12, whiteSpace: "nowrap" }}>
                     {uploading === "logo" ? <i className="fas fa-spinner fa-spin"></i> : <><i className="fas fa-upload" style={{ marginRight: 4 }}></i>Upload</>}
+                  </button>
+                  <button type="button" onClick={() => setMediaLibraryFor("logo")} className="admin-btn admin-btn-secondary" style={{ padding: "8px 14px", fontSize: 12, whiteSpace: "nowrap" }}>
+                    <i className="fas fa-images" style={{ marginRight: 4 }}></i>Library
                   </button>
                 </div>
                 <small style={{ color: "var(--admin-text-muted)", fontSize: 12 }}>Tampil di header bar, sidebar, dan mobile menu</small>
@@ -337,9 +342,12 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
                 <label className="admin-form-label">Logo Sticky Navbar (JPG/PNG)</label>
                 <div style={{ display: "flex", gap: 8 }}>
                   <input name="header_logo_sticky" value={logoStickyPath} onChange={(e) => setLogoStickyPath(e.target.value)} className="admin-form-input" placeholder="/assets/img/logo.jpg" style={{ flex: 1 }} />
-                  <input type="file" accept="image/*" ref={logoStickyInputRef} style={{ display: "none" }} onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadImage(f, setLogoStickyPath, "logo_sticky"); e.target.value = ""; }} />
+                  <input type="file" accept="image/*,video/*" ref={logoStickyInputRef} style={{ display: "none" }} onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadImage(f, setLogoStickyPath, "logo_sticky"); e.target.value = ""; }} />
                   <button type="button" onClick={() => logoStickyInputRef.current?.click()} disabled={uploading === "logo_sticky"} className="admin-btn admin-btn-secondary" style={{ padding: "8px 14px", fontSize: 12, whiteSpace: "nowrap" }}>
                     {uploading === "logo_sticky" ? <i className="fas fa-spinner fa-spin"></i> : <><i className="fas fa-upload" style={{ marginRight: 4 }}></i>Upload</>}
+                  </button>
+                  <button type="button" onClick={() => setMediaLibraryFor("logo_sticky")} className="admin-btn admin-btn-secondary" style={{ padding: "8px 14px", fontSize: 12, whiteSpace: "nowrap" }}>
+                    <i className="fas fa-images" style={{ marginRight: 4 }}></i>Library
                   </button>
                 </div>
                 <small style={{ color: "var(--admin-text-muted)", fontSize: 12 }}>Tampil di navigation bar saat scroll</small>
@@ -377,9 +385,12 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
                     <label className="admin-form-label" style={{ fontSize: 12 }}>Icon Path</label>
                     <div style={{ display: "flex", gap: 6 }}>
                       <input value={badge.icon} onChange={(e) => updateBadge(i, "icon", e.target.value)} className="admin-form-input" placeholder="/assets/img/certified.png" style={{ flex: 1 }} />
-                      <input type="file" accept="image/*" ref={(el) => { badgeInputRefs.current[i] = el; }} style={{ display: "none" }} onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadImage(f, (url) => updateBadge(i, "icon", url), `badge_${i}`); e.target.value = ""; }} />
+                      <input type="file" accept="image/*,video/*" ref={(el) => { badgeInputRefs.current[i] = el; }} style={{ display: "none" }} onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadImage(f, (url) => updateBadge(i, "icon", url), `badge_${i}`); e.target.value = ""; }} />
                       <button type="button" onClick={() => badgeInputRefs.current[i]?.click()} disabled={uploading === `badge_${i}`} className="admin-btn admin-btn-secondary" style={{ padding: "6px 10px", fontSize: 11, flexShrink: 0 }}>
                         {uploading === `badge_${i}` ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-upload"></i>}
+                      </button>
+                      <button type="button" onClick={() => setMediaLibraryFor(`badge_${i}`)} className="admin-btn admin-btn-secondary" style={{ padding: "6px 10px", fontSize: 11, flexShrink: 0 }}>
+                        <i className="fas fa-images"></i>
                       </button>
                     </div>
                   </div>
@@ -901,6 +912,20 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
           )}
         </button>
       </div>
+
+      <MediaLibraryModal
+        open={mediaLibraryFor !== null}
+        onClose={() => setMediaLibraryFor(null)}
+        onSelect={(url) => {
+          if (mediaLibraryFor === "logo") setLogoPath(url);
+          else if (mediaLibraryFor === "logo_sticky") setLogoStickyPath(url);
+          else if (mediaLibraryFor?.startsWith("badge_")) {
+            const idx = parseInt(mediaLibraryFor.split("_")[1]);
+            updateBadge(idx, "icon", url);
+          }
+          setMediaLibraryFor(null);
+        }}
+      />
     </form>
   );
 }

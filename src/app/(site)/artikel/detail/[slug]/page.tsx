@@ -1,11 +1,39 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import Breadcrumb from "@/components/layout/Breadcrumb";
 import BlogSidebar from "@/components/shared/BlogSidebar";
 import { prisma } from "@/lib/prisma";
 import { getSiteSettings } from "@/lib/site-settings";
+import { sanitizeHtml } from "@/lib/sanitize";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await prisma.blogPost.findFirst({
+    where: { slug, status: "published", deletedAt: null },
+    select: { title: true, excerpt: true, metaTitle: true, metaDescription: true, ogImage: true, image: true, author: true, publishedAt: true },
+  });
+  if (!post) return { title: "Artikel Tidak Ditemukan" };
+  return {
+    title: post.metaTitle || `${post.title} | Sea-Quill Blog`,
+    description: post.metaDescription || post.excerpt || `Baca artikel ${post.title} dari Sea-Quill.`,
+    openGraph: {
+      title: post.metaTitle || post.title,
+      description: post.metaDescription || post.excerpt || "",
+      images: post.ogImage || post.image ? [{ url: post.ogImage || post.image }] : [],
+      type: "article",
+      authors: [post.author],
+      publishedTime: post.publishedAt.toISOString(),
+    },
+  };
+}
 
 export default async function BlogDetailPage({
   params,
@@ -28,8 +56,36 @@ export default async function BlogDetailPage({
     month: "long",
     day: "numeric",
   });
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    image: post.image,
+    author: {
+      "@type": "Person",
+      name: post.author,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Sea-Quill Indonesia",
+      logo: {
+        "@type": "ImageObject",
+        url: "/assets/img/logo.svg",
+      },
+    },
+    datePublished: post.publishedAt.toISOString(),
+    dateModified: post.updatedAt.toISOString(),
+    description: post.excerpt || post.title,
+    articleSection: post.category.title,
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Breadcrumb title="About Us" />
 
       <section className="th-blog-wrapper blog-details space-top space-extra-bottom">
@@ -38,7 +94,7 @@ export default async function BlogDetailPage({
             <div className="col-xxl-8 col-lg-7">
               <div className="th-blog blog-single">
                 <div className="blog-img global-img">
-                  <img src={post.image} alt="Blog Image" />
+                  <Image src={post.image} alt={post.title} width={800} height={450} sizes="(max-width: 992px) 100vw, 66vw" priority />
                 </div>
                 <div className="blog-content">
                   <div className="blog-meta">
@@ -55,7 +111,7 @@ export default async function BlogDetailPage({
                   <h2 className="blog-title">
                     {post.title}
                   </h2>
-                  <div dangerouslySetInnerHTML={{ __html: post.content }} />
+                  <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }} />
 
                   <div className="share-links clearfix">
                     <div className="row justify-content-between">
