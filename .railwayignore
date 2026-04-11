@@ -1,0 +1,13 @@
+node_modules
+.next
+.venv
+out
+build
+coverage
+*.log
+.DS_Store
+*.pem
+Invoice_Aniraza_Agency.pdf
+Quotation_Website_Seaquill.pdf
+MEETING_AGENDA.docx
+scripts/generate-*.py

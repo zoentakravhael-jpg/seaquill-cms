@@ -4,6 +4,8 @@ import Link from "next/link";
 import { getSiteSettings } from "@/lib/site-settings";
 import Breadcrumb from "@/components/layout/Breadcrumb";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Belanja Sea-Quill di Marketplace",
   description: "Temukan produk Sea-Quill di marketplace pilihan Anda — Tokopedia, Shopee, dan TikTok Shop.",
