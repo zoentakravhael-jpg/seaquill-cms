@@ -93,6 +93,8 @@ export default function HeroSlider({
                 data-bg-src={slide.bgImage}
                 style={{
                   backgroundImage: `url(${slide.bgImage})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center center",
                 }}
               ></div>
               <div className="container">

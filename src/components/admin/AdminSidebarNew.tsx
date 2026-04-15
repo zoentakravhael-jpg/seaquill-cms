@@ -33,6 +33,7 @@ const navSections: NavSection[] = [
       { href: "/admin/layout-pages/promo", label: "Promo & Event", icon: "fas fa-bullhorn" },
       { href: "/admin/layout-pages/galeri", label: "Galeri", icon: "fas fa-images" },
       { href: "/admin/layout-pages/hubungi-kami", label: "Hubungi Kami", icon: "fas fa-phone-alt" },
+      { href: "/admin/layout-pages/belanja", label: "Belanja", icon: "fas fa-shopping-bag" },
     ],
   },
   {
@@ -65,6 +66,7 @@ const navSections: NavSection[] = [
       { href: "/admin/media", label: "Media Library", icon: "fas fa-images" },
       { href: "/admin/pesan", label: "Pesan Masuk", icon: "fas fa-envelope" },
       { href: "/admin/form-builder", label: "Form Builder", icon: "fas fa-wpforms" },
+      { href: "/admin/popup-form", label: "Pop Up Form", icon: "fas fa-window-restore" },
     ],
   },
   {

@@ -67,14 +67,14 @@ def draw_background(c, doc):
     # PROFORMA INVOICE badge right
     c.setFillColor(ACCENT)
     c.setFont('Helvetica-Bold', 12)
-    c.drawRightString(WIDTH - 2.5 * cm, HEIGHT - 1.6 * cm, 'PROFORMA INVOICE')
+    c.drawRightString(WIDTH - 2.5 * cm, HEIGHT - 1.6 * cm, 'INVOICE')
     # Footer bar
     c.setFillColor(PRIMARY)
     c.rect(0, 0, WIDTH, 1.5 * cm, fill=True, stroke=False)
     c.setFillColor(TEXT_MUTED)
     c.setFont('Helvetica', 7)
     c.drawCentredString(WIDTH / 2, 0.65 * cm,
-                        '\u00a9 2026 Aniraza Agency  \u2022  Proforma Invoice \u2014 bukan bukti pembayaran')
+                        '\u00a9 2026 Aniraza Agency  \u2022  Invoice \u2014 Lunas / Paid')
     # Gold line above footer
     c.setFillColor(ACCENT)
     c.rect(0, 1.5 * cm, WIDTH, 1 * mm, fill=True, stroke=False)
@@ -144,14 +144,14 @@ info_left_t.setStyle(TableStyle([
     ('VALIGN', (0, 0), (-1, -1), 'TOP'),
 ]))
 
-# NOT PAID badge
+# PAID badge
 badge_style = ParagraphStyle('badge', fontName='Helvetica-Bold', fontSize=11,
-                              leading=14, textColor=HexColor('#CC3333'), alignment=TA_CENTER)
+                              leading=14, textColor=HexColor('#228B22'), alignment=TA_CENTER)
 badge_inner = Table(
-    [[Paragraph('NOT PAID', badge_style)]],
+    [[Paragraph('PAID', badge_style)]],
     colWidths=[3.2 * cm],
     style=TableStyle([
-        ('BOX', (0, 0), (-1, -1), 2, HexColor('#CC3333')),
+        ('BOX', (0, 0), (-1, -1), 2, HexColor('#228B22')),
         ('TOPPADDING', (0, 0), (-1, -1), 5),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
         ('LEFTPADDING', (0, 0), (-1, -1), 8),
@@ -307,8 +307,7 @@ elements.append(Spacer(1, 10))
 
 # ── Note ──
 elements.append(Paragraph(
-    '<b>Catatan:</b> Mohon sertakan nomor invoice pada keterangan transfer. '
-    'Konfirmasi pembayaran dapat dikirim via WhatsApp ke <b>081314566100</b>.',
+    '<b>Catatan:</b> Invoice ini sudah lunas. Terima kasih atas pembayaran Anda.',
     ParagraphStyle('', fontName='Helvetica', fontSize=9, leading=14,
                    textColor=TEXT_MUTED, alignment=TA_JUSTIFY)))
 

@@ -113,6 +113,46 @@ export default function Header({
     }
   }, [s.header_badges]);
 
+  // Parse popup config from DB
+  const popupConfig = useMemo(() => {
+    const defaults = {
+      enabled: true,
+      headerTitle: "Connect To Us",
+      headerSubtitle: "Isi form berikut & tim kami akan segera menghubungi Anda",
+      headerIcon: "fa-solid fa-paper-plane",
+      buttonText: "Connect To Us",
+      buttonIcon: "fa-solid fa-envelope",
+      gradientFrom: "#d97706",
+      gradientTo: "#f59e0b",
+      buttonGradientFrom: "#d97706",
+      buttonGradientTo: "#ea8b12",
+      fields: {
+        name: { visible: true, required: true, label: "Nama", placeholder: "Nama lengkap Anda" },
+        email: { visible: true, required: true, label: "Email", placeholder: "email@contoh.com" },
+        phone: { visible: true, required: false, label: "Nomor HP", placeholder: "+62 8xx-xxxx-xxxx" },
+        product: { visible: true, required: false, label: "Produk Terkait", placeholder: "Pilih produk (opsional)" },
+        message: { visible: true, required: true, label: "Pesan", placeholder: "Tuliskan pertanyaan atau kebutuhan Anda..." },
+      },
+      productSource: "auto" as const,
+      manualProducts: [] as string[],
+      successTitle: "Pesan Terkirim!",
+      successMessage: "Terima kasih! Kami akan menghubungi Anda segera.",
+    };
+    try {
+      if (s.popup_connect_form) {
+        return { ...defaults, ...JSON.parse(s.popup_connect_form) };
+      }
+    } catch { /* ignore */ }
+    return defaults;
+  }, [s.popup_connect_form]);
+
+  const popupProducts = useMemo(() => {
+    if (popupConfig.productSource === "manual" && popupConfig.manualProducts.length > 0) {
+      return popupConfig.manualProducts.map((name: string, idx: number) => ({ id: idx, name }));
+    }
+    return products;
+  }, [popupConfig.productSource, popupConfig.manualProducts, products]);
+
   async function handleConnectSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setConnectStatus("loading");
@@ -255,7 +295,7 @@ export default function Header({
           }}>
             {/* Gradient header strip */}
             <div style={{
-              background: "linear-gradient(135deg, #d97706 0%, #ea8b12 50%, #f59e0b 100%)",
+              background: `linear-gradient(135deg, ${popupConfig.gradientFrom} 0%, ${popupConfig.gradientTo} 100%)`,
               padding: "26px 32px 22px",
               position: "relative",
             }}>
@@ -278,11 +318,11 @@ export default function Header({
                   width: "48px", height: "48px", display: "flex",
                   alignItems: "center", justifyContent: "center", flexShrink: 0,
                 }}>
-                  <i className="fa-solid fa-paper-plane" style={{ color: "#fff", fontSize: "20px" }}></i>
+                  <i className={popupConfig.headerIcon} style={{ color: "#fff", fontSize: "20px" }}></i>
                 </div>
                 <div>
-                  <h3 style={{ margin: 0, fontSize: "20px", fontWeight: 700, color: "#fff", letterSpacing: "-0.3px" }}>Connect To Us</h3>
-                  <p style={{ margin: 0, color: "rgba(255,255,255,0.85)", fontSize: "13px", marginTop: "2px" }}>Isi form berikut &amp; tim kami akan segera menghubungi Anda</p>
+                  <h3 style={{ margin: 0, fontSize: "20px", fontWeight: 700, color: "#fff", letterSpacing: "-0.3px" }}>{popupConfig.headerTitle}</h3>
+                  <p style={{ margin: 0, color: "rgba(255,255,255,0.85)", fontSize: "13px", marginTop: "2px" }}>{popupConfig.headerSubtitle}</p>
                 </div>
               </div>
             </div>
@@ -300,84 +340,98 @@ export default function Header({
                   }}>
                     <i className="fa-solid fa-check" style={{ fontSize: "28px", color: "#fff" }}></i>
                   </div>
-                  <p style={{ fontWeight: 700, fontSize: "18px", margin: "0 0 8px", color: "#1a1a1a" }}>Pesan Terkirim!</p>
-                  <p style={{ color: "#6b7280", fontSize: "14px", margin: 0 }}>Terima kasih! Kami akan menghubungi Anda segera.</p>
+                  <p style={{ fontWeight: 700, fontSize: "18px", margin: "0 0 8px", color: "#1a1a1a" }}>{popupConfig.successTitle}</p>
+                  <p style={{ color: "#6b7280", fontSize: "14px", margin: 0 }}>{popupConfig.successMessage}</p>
                 </div>
               ) : (
                 <form onSubmit={handleConnectSubmit} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
                   {/* Row 1: Name + Email */}
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: popupConfig.fields.name.visible && popupConfig.fields.email.visible ? "1fr 1fr" : "1fr", gap: "14px" }}>
+                    {popupConfig.fields.name.visible && (
                     <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
-                      <label style={{ fontSize: "12px", fontWeight: 600, color: "#374151", textTransform: "uppercase", letterSpacing: "0.5px" }}>Nama <span style={{ color: "#ea8b12" }}>*</span></label>
+                      <label style={{ fontSize: "12px", fontWeight: 600, color: "#374151", textTransform: "uppercase", letterSpacing: "0.5px" }}>{popupConfig.fields.name.label} {popupConfig.fields.name.required && <span style={{ color: "#ea8b12" }}>*</span>}</label>
                       <input
                         type="text"
-                        placeholder="Nama lengkap Anda"
+                        placeholder={popupConfig.fields.name.placeholder}
                         value={connectForm.name}
                         onChange={(e) => setConnectForm(f => ({ ...f, name: e.target.value }))}
-                        required
+                        required={popupConfig.fields.name.required}
                         style={{ padding: "10px 14px", border: "1.5px solid #e5e7eb", borderRadius: "10px", fontSize: "14px", outline: "none", width: "100%", boxSizing: "border-box", transition: "border-color 0.2s", color: "#1a1a1a" }}
                         onFocus={(e) => e.target.style.borderColor = "#ea8b12"}
                         onBlur={(e) => e.target.style.borderColor = "#e5e7eb"}
                       />
                     </div>
+                    )}
+                    {popupConfig.fields.email.visible && (
                     <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
-                      <label style={{ fontSize: "12px", fontWeight: 600, color: "#374151", textTransform: "uppercase", letterSpacing: "0.5px" }}>Email <span style={{ color: "#ea8b12" }}>*</span></label>
+                      <label style={{ fontSize: "12px", fontWeight: 600, color: "#374151", textTransform: "uppercase", letterSpacing: "0.5px" }}>{popupConfig.fields.email.label} {popupConfig.fields.email.required && <span style={{ color: "#ea8b12" }}>*</span>}</label>
                       <input
                         type="email"
-                        placeholder="email@contoh.com"
+                        placeholder={popupConfig.fields.email.placeholder}
                         value={connectForm.email}
                         onChange={(e) => setConnectForm(f => ({ ...f, email: e.target.value }))}
-                        required
+                        required={popupConfig.fields.email.required}
                         style={{ padding: "10px 14px", border: "1.5px solid #e5e7eb", borderRadius: "10px", fontSize: "14px", outline: "none", width: "100%", boxSizing: "border-box", transition: "border-color 0.2s", color: "#1a1a1a" }}
                         onFocus={(e) => e.target.style.borderColor = "#ea8b12"}
                         onBlur={(e) => e.target.style.borderColor = "#e5e7eb"}
                       />
                     </div>
+                    )}
                   </div>
                   {/* Row 2: Phone + Product */}
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+                  {(popupConfig.fields.phone.visible || popupConfig.fields.product.visible) && (
+                  <div style={{ display: "grid", gridTemplateColumns: popupConfig.fields.phone.visible && popupConfig.fields.product.visible ? "1fr 1fr" : "1fr", gap: "14px" }}>
+                    {popupConfig.fields.phone.visible && (
                     <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
-                      <label style={{ fontSize: "12px", fontWeight: 600, color: "#374151", textTransform: "uppercase", letterSpacing: "0.5px" }}>Nomor HP</label>
+                      <label style={{ fontSize: "12px", fontWeight: 600, color: "#374151", textTransform: "uppercase", letterSpacing: "0.5px" }}>{popupConfig.fields.phone.label} {popupConfig.fields.phone.required && <span style={{ color: "#ea8b12" }}>*</span>}</label>
                       <input
                         type="tel"
-                        placeholder="+62 8xx-xxxx-xxxx"
+                        placeholder={popupConfig.fields.phone.placeholder}
                         value={connectForm.phone}
                         onChange={(e) => setConnectForm(f => ({ ...f, phone: e.target.value }))}
+                        required={popupConfig.fields.phone.required}
                         style={{ padding: "10px 14px", border: "1.5px solid #e5e7eb", borderRadius: "10px", fontSize: "14px", outline: "none", width: "100%", boxSizing: "border-box", transition: "border-color 0.2s", color: "#1a1a1a" }}
                         onFocus={(e) => e.target.style.borderColor = "#ea8b12"}
                         onBlur={(e) => e.target.style.borderColor = "#e5e7eb"}
                       />
                     </div>
+                    )}
+                    {popupConfig.fields.product.visible && (
                     <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
-                      <label style={{ fontSize: "12px", fontWeight: 600, color: "#374151", textTransform: "uppercase", letterSpacing: "0.5px" }}>Produk Terkait</label>
+                      <label style={{ fontSize: "12px", fontWeight: 600, color: "#374151", textTransform: "uppercase", letterSpacing: "0.5px" }}>{popupConfig.fields.product.label} {popupConfig.fields.product.required && <span style={{ color: "#ea8b12" }}>*</span>}</label>
                       <select
                         value={connectForm.productName}
                         onChange={(e) => setConnectForm(f => ({ ...f, productName: e.target.value }))}
+                        required={popupConfig.fields.product.required}
                         style={{ padding: "10px 14px", border: "1.5px solid #e5e7eb", borderRadius: "10px", fontSize: "14px", outline: "none", width: "100%", boxSizing: "border-box", transition: "border-color 0.2s", color: connectForm.productName ? "#1a1a1a" : "#9ca3af", background: "#fff", cursor: "pointer" }}
                         onFocus={(e) => e.target.style.borderColor = "#ea8b12"}
                         onBlur={(e) => e.target.style.borderColor = "#e5e7eb"}
                       >
-                        <option value="">Pilih produk (opsional)</option>
-                        {products.map((p) => (
+                        <option value="">{popupConfig.fields.product.placeholder}</option>
+                        {popupProducts.map((p: { id: number; name: string }) => (
                           <option key={p.id} value={p.name}>{p.name}</option>
                         ))}
                       </select>
                     </div>
+                    )}
                   </div>
+                  )}
                   {/* Message full width */}
+                  {popupConfig.fields.message.visible && (
                   <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
-                    <label style={{ fontSize: "12px", fontWeight: 600, color: "#374151", textTransform: "uppercase", letterSpacing: "0.5px" }}>Pesan <span style={{ color: "#ea8b12" }}>*</span></label>
+                    <label style={{ fontSize: "12px", fontWeight: 600, color: "#374151", textTransform: "uppercase", letterSpacing: "0.5px" }}>{popupConfig.fields.message.label} {popupConfig.fields.message.required && <span style={{ color: "#ea8b12" }}>*</span>}</label>
                     <textarea
-                      placeholder="Tuliskan pertanyaan atau kebutuhan Anda..."
+                      placeholder={popupConfig.fields.message.placeholder}
                       value={connectForm.message}
                       onChange={(e) => setConnectForm(f => ({ ...f, message: e.target.value }))}
-                      required
+                      required={popupConfig.fields.message.required}
                       rows={4}
                       style={{ padding: "10px 14px", border: "1.5px solid #e5e7eb", borderRadius: "10px", fontSize: "14px", outline: "none", resize: "vertical", width: "100%", boxSizing: "border-box", transition: "border-color 0.2s", color: "#1a1a1a", fontFamily: "inherit" }}
                       onFocus={(e) => e.target.style.borderColor = "#ea8b12"}
                       onBlur={(e) => e.target.style.borderColor = "#e5e7eb"}
                     />
                   </div>
+                  )}
                   {connectError && (
                     <div style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: "8px", padding: "10px 14px", display: "flex", alignItems: "center", gap: "8px" }}>
                       <i className="fa-solid fa-circle-exclamation" style={{ color: "#ef4444", fontSize: "14px", flexShrink: 0 }}></i>
@@ -389,7 +443,7 @@ export default function Header({
                     disabled={connectStatus === "loading"}
                     style={{
                       padding: "13px 20px",
-                      background: connectStatus === "loading" ? "#f5a623" : "linear-gradient(135deg, #d97706, #ea8b12)",
+                      background: connectStatus === "loading" ? "#f5a623" : `linear-gradient(135deg, ${popupConfig.buttonGradientFrom}, ${popupConfig.buttonGradientTo})`,
                       color: "#fff", border: "none", borderRadius: "10px",
                       fontSize: "15px", fontWeight: 700,
                       cursor: connectStatus === "loading" ? "wait" : "pointer",
@@ -456,7 +510,7 @@ export default function Header({
                   key={index}
                   className={
                     item.children
-                      ? `menu-item-has-children th-item-has-children${
+                      ? `menu-item-has-children th-item-has-children has-custom-toggle${
                           openSubmenus.includes(index) ? " th-active" : ""
                         }`
                       : ""
@@ -465,13 +519,20 @@ export default function Header({
                   <Link href={item.href}>{item.label}</Link>
                   {item.children && (
                     <>
-                      <span
-                        className="th-mean-expand"
+                      <button
+                        type="button"
+                        className="submenu-toggle-btn"
+                        aria-label="Toggle submenu"
                         onClick={(e) => {
                           e.preventDefault();
+                          e.stopPropagation();
                           toggleSubmenu(index);
                         }}
-                      ></span>
+                      >
+                        <span className="toggle-icon">
+                          {openSubmenus.includes(index) ? "−" : "+"}
+                        </span>
+                      </button>
                       <ul
                         className={`sub-menu th-submenu${
                           openSubmenus.includes(index) ? " th-open" : ""
@@ -501,13 +562,23 @@ export default function Header({
           <div className="menu-area">
             <div className="menu-top">
               <div className="container">
-                <div className="row align-items-center justify-content-center justify-content-sm-between">
+                <div className="row align-items-center justify-content-between">
                   <div className="col-auto">
                     <div className="header-logo">
                       <Link href="/">
                         <Image src={headerLogo} alt="Seaquill" width={200} height={80} style={{ maxHeight: "80px", width: "auto" }} priority />
                       </Link>
                     </div>
+                  </div>
+                  {/* Mobile hamburger — inline with logo */}
+                  <div className="col-auto d-lg-none">
+                    <button
+                      type="button"
+                      className="th-menu-toggle"
+                      onClick={() => setMobileMenuOpen(true)}
+                    >
+                      <i className="far fa-bars"></i>
+                    </button>
                   </div>
                   <div className="col-auto d-none d-sm-block">
                     <div className="header-info-wrap">
@@ -595,6 +666,7 @@ export default function Header({
                   </div>
                   <div className="col-auto">
                     <div className="header-button d-none d-lg-block" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      {popupConfig.enabled && (
                       <button
                         onClick={() => { setConnectOpen(true); setConnectStatus("idle"); setConnectError(""); }}
                         style={{
@@ -604,9 +676,10 @@ export default function Header({
                           cursor: "pointer", fontSize: "13px", fontWeight: 600, whiteSpace: "nowrap",
                         }}
                       >
-                        <i className="fa-solid fa-envelope"></i>
-                        Connect To Us
+                        <i className={popupConfig.buttonIcon}></i>
+                        {popupConfig.buttonText}
                       </button>
+                      )}
                       <Link
                         href="/belanja"
                         style={{ padding: "0 10px", display: "inline-flex", alignItems: "center", color: "inherit" }}
@@ -615,13 +688,7 @@ export default function Header({
                         <i className="fa-solid fa-cart-shopping" style={{ fontSize: "22px" }}></i>
                       </Link>
                     </div>
-                    <button
-                      type="button"
-                      className="th-menu-toggle d-inline-block d-lg-none"
-                      onClick={() => setMobileMenuOpen(true)}
-                    >
-                      <i className="far fa-bars"></i>
-                    </button>
+                    {/* Old mobile hamburger removed — now in menu-top */}
                   </div>
                 </div>
               </div>

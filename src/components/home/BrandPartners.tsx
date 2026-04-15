@@ -84,12 +84,12 @@ export default function BrandPartners({
               }
             }}
             breakpoints={{
-              0: { slidesPerView: 1 },
-              476: { slidesPerView: 2 },
-              768: { slidesPerView: 2 },
-              992: { slidesPerView: 3 },
-              1200: { slidesPerView: 4 },
-              1400: { slidesPerView: 5 },
+              0: { slidesPerView: 2, slidesPerGroup: 1 },
+              476: { slidesPerView: 2, slidesPerGroup: 1 },
+              768: { slidesPerView: 3, slidesPerGroup: 1 },
+              992: { slidesPerView: 3, slidesPerGroup: 1 },
+              1200: { slidesPerView: 4, slidesPerGroup: 1 },
+              1400: { slidesPerView: 5, slidesPerGroup: 1 },
             }}
           >
             {slides.map((brand, idx) => (

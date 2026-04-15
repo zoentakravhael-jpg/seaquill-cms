@@ -29,6 +29,17 @@ interface FooterNavCategory {
   links: FooterNavLink[];
 }
 
+interface SmtpConfig {
+  host: string;
+  port: number;
+  secure: boolean;
+  user: string;
+  pass: string;
+  notifyEmail: string;
+  fromName: string;
+  enabled: boolean;
+}
+
 interface SettingsFormProps {
   settings: Record<string, string>;
 }
@@ -41,6 +52,7 @@ const tabs = [
   { key: "homepage", label: "Homepage", icon: "fas fa-home" },
   { key: "social", label: "Social Media", icon: "fas fa-share-alt" },
   { key: "marketplace", label: "Marketplace", icon: "fas fa-shopping-cart" },
+  { key: "email", label: "Email SMTP", icon: "fas fa-envelope" },
 ] as const;
 
 type TabKey = (typeof tabs)[number]["key"];
@@ -120,6 +132,16 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
   }, [settings.footer_nav]);
   const [footerNav, setFooterNav] = useState<FooterNavCategory[]>(initialFooterNav);
   const [footerDragCat, setFooterDragCat] = useState<number | null>(null);
+
+  // SMTP Config state
+  const initialSmtp = useMemo((): SmtpConfig => {
+    const defaults: SmtpConfig = { host: "", port: 587, secure: false, user: "", pass: "", notifyEmail: "", fromName: "Seaquill Website", enabled: false };
+    try {
+      return { ...defaults, ...JSON.parse(settings.email_smtp_config || "{}") };
+    } catch { return defaults; }
+  }, [settings.email_smtp_config]);
+  const [smtpConfig, setSmtpConfig] = useState<SmtpConfig>(initialSmtp);
+  const [testingEmail, setTestingEmail] = useState(false);
 
   const logoInputRef = useRef<HTMLInputElement>(null);
   const logoStickyInputRef = useRef<HTMLInputElement>(null);
@@ -899,6 +921,119 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
               Tombol Tokopedia &amp; Shopee tampil di Header dan Footer. Lazada &amp; TikTok Shop untuk penggunaan di masa depan.
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* ── Tab: Email SMTP ── */}
+      <div style={{ display: activeTab === "email" ? "block" : "none" }}>
+        <input type="hidden" name="email_smtp_config" value={JSON.stringify(smtpConfig)} />
+        <div className="admin-card" style={{ marginBottom: 24 }}>
+          <div className="admin-card-header">
+            <span className="admin-card-title">
+              <i className="fas fa-envelope" style={{ marginRight: 8, color: "var(--admin-primary)" }}></i>Konfigurasi SMTP
+            </span>
+          </div>
+          <div className="admin-card-body">
+            <div style={{ padding: "12px 16px", background: "#fef3cd", borderRadius: 8, marginBottom: 16, fontSize: 13, color: "#856404", border: "1px solid #ffc107" }}>
+              <i className="fas fa-exclamation-triangle" style={{ marginRight: 6 }}></i>
+              Konfigurasi SMTP diperlukan agar sistem bisa mengirim email notifikasi ke admin saat ada pesan masuk dari form kontak atau Pop Up Form.
+            </div>
+            <div className="admin-form-grid admin-form-grid-2">
+              <div className="admin-form-group">
+                <label className="admin-form-label">SMTP Host</label>
+                <input value={smtpConfig.host} onChange={(e) => setSmtpConfig(c => ({ ...c, host: e.target.value }))} className="admin-form-input" placeholder="smtp.gmail.com" />
+              </div>
+              <div className="admin-form-group">
+                <label className="admin-form-label">SMTP Port</label>
+                <input type="number" value={smtpConfig.port} onChange={(e) => setSmtpConfig(c => ({ ...c, port: parseInt(e.target.value) || 587 }))} className="admin-form-input" placeholder="587" />
+              </div>
+              <div className="admin-form-group">
+                <label className="admin-form-label">Username / Email Pengirim</label>
+                <input value={smtpConfig.user} onChange={(e) => setSmtpConfig(c => ({ ...c, user: e.target.value }))} className="admin-form-input" placeholder="info@seaquill.co.id" />
+              </div>
+              <div className="admin-form-group">
+                <label className="admin-form-label">Password / App Password</label>
+                <input type="password" value={smtpConfig.pass} onChange={(e) => setSmtpConfig(c => ({ ...c, pass: e.target.value }))} className="admin-form-input" placeholder="••••••••" />
+              </div>
+            </div>
+            <div className="admin-form-group" style={{ marginTop: 4 }}>
+              <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, cursor: "pointer" }}>
+                <input type="checkbox" checked={smtpConfig.secure} onChange={(e) => setSmtpConfig(c => ({ ...c, secure: e.target.checked }))} />
+                Gunakan SSL/TLS (centang untuk port 465, kosongkan untuk port 587)
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div className="admin-card" style={{ marginBottom: 24 }}>
+          <div className="admin-card-header">
+            <span className="admin-card-title">
+              <i className="fas fa-inbox" style={{ marginRight: 8, color: "var(--admin-success)" }}></i>Email Penerima Notifikasi
+            </span>
+          </div>
+          <div className="admin-card-body">
+            <div className="admin-form-group">
+              <label className="admin-form-label">Email Tujuan</label>
+              <input value={smtpConfig.notifyEmail} onChange={(e) => setSmtpConfig(c => ({ ...c, notifyEmail: e.target.value }))} type="email" className="admin-form-input" placeholder="admin@seaquill.co.id" />
+              <span style={{ fontSize: 12, color: "var(--admin-text-muted)", marginTop: 4, display: "block" }}>
+                Setiap ada pesan masuk dari form kontak atau Pop Up Form, notifikasi akan dikirim ke email ini.
+              </span>
+            </div>
+            <div className="admin-form-group">
+              <label className="admin-form-label">Nama Pengirim (From Name)</label>
+              <input value={smtpConfig.fromName} onChange={(e) => setSmtpConfig(c => ({ ...c, fromName: e.target.value }))} className="admin-form-input" placeholder="Seaquill Website" />
+            </div>
+            <div className="admin-form-group" style={{ marginTop: 4 }}>
+              <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, cursor: "pointer" }}>
+                <input type="checkbox" checked={smtpConfig.enabled} onChange={(e) => setSmtpConfig(c => ({ ...c, enabled: e.target.checked }))} />
+                <strong>Aktifkan pengiriman email notifikasi</strong>
+              </label>
+              <span style={{ fontSize: 12, color: "var(--admin-text-muted)", marginTop: 4, display: "block", marginLeft: 26 }}>
+                Jika tidak dicentang, pesan tetap tersimpan di database tapi tidak ada email notifikasi yang dikirim.
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="admin-card" style={{ marginBottom: 24 }}>
+          <div className="admin-card-header">
+            <span className="admin-card-title">
+              <i className="fas fa-flask" style={{ marginRight: 8, color: "var(--admin-warning)" }}></i>Test Kirim Email
+            </span>
+          </div>
+          <div className="admin-card-body">
+            <p style={{ fontSize: 13, color: "var(--admin-text-muted)", marginBottom: 12 }}>
+              Klik tombol di bawah untuk mengirim email percobaan ke alamat tujuan.
+              Pastikan konfigurasi SMTP sudah disimpan terlebih dahulu.
+            </p>
+            <button
+              type="button"
+              disabled={testingEmail}
+              onClick={async () => {
+                setTestingEmail(true);
+                try {
+                  const res = await fetch("/api/admin/test-email", { method: "POST" });
+                  const data = await res.json();
+                  if (res.ok) toast.success(data.message || "Email test berhasil dikirim!");
+                  else toast.error(data.error || "Gagal mengirim email test");
+                } catch { toast.error("Gagal mengirim email test"); }
+                finally { setTestingEmail(false); }
+              }}
+              className="admin-btn admin-btn-secondary"
+              style={{ fontSize: 13 }}
+            >
+              {testingEmail ? (
+                <><i className="fas fa-spinner fa-spin" style={{ marginRight: 6 }}></i>Mengirim...</>
+              ) : (
+                <><i className="fas fa-paper-plane" style={{ marginRight: 6 }}></i>Kirim Email Test</>
+              )}
+            </button>
+          </div>
+        </div>
+
+        <div style={{ padding: "12px 16px", background: "var(--admin-bg)", borderRadius: 8, fontSize: 13, color: "var(--admin-text-muted)" }}>
+          <i className="fas fa-info-circle" style={{ marginRight: 6 }}></i>
+          <strong>Tips Gmail:</strong> Gunakan <em>App Password</em> (bukan password akun). Buat di <em>Google Account → Security → 2-Step Verification → App Passwords</em>. Host: <code>smtp.gmail.com</code>, Port: <code>587</code>, SSL: tidak dicentang.
         </div>
       </div>
 

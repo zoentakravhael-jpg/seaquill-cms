@@ -1,0 +1,12 @@
+.git
+.gitignore
+README.md
+docs
+scripts
+.env
+.env.local
+.env.*.local
+node_modules
+.next/cache
+public/uploads/*
+!public/uploads/.gitkeep

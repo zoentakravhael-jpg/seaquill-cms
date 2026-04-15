@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { sendContactNotification } from "@/lib/mailer";
 
 export async function POST(request: NextRequest) {
   try {
@@ -38,6 +39,16 @@ export async function POST(request: NextRequest) {
         source: source === "consultation" ? "consultation" : "contact",
       },
     });
+
+    // Send email notification (non-blocking — don't fail the request if email fails)
+    sendContactNotification({
+      name: name.trim(),
+      email: email.trim(),
+      phone: typeof phone === "string" ? phone.trim() : undefined,
+      subject: typeof subject === "string" ? subject.trim() : undefined,
+      message: message.trim(),
+      source: source === "consultation" ? "consultation" : "contact",
+    }).catch(() => { /* email send failure is non-critical */ });
 
     return NextResponse.json(
       { success: true, message: "Pesan berhasil dikirim!", id: contact.id },

@@ -438,6 +438,7 @@ export async function updateSettings(formData: FormData): Promise<ActionResult> 
     "social_shopee", "social_tokopedia", "social_lazada", "social_tiktok_shop",
     "home_feature_cards", "home_about_section", "home_service_list",
     "home_product_section", "home_blog_section",
+    "email_smtp_config",
   ];
 
   for (const key of keys) {

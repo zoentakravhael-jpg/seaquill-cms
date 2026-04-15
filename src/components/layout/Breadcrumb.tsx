@@ -22,22 +22,6 @@ export default function Breadcrumb({
       data-bg-src={bgImage}
       style={{ backgroundImage: `url(${bgImage})` }}
     >
-      <div className="container">
-        <div className="breadcumb-content">
-          <h1 className="breadcumb-title">{title}</h1>
-          <ul className="breadcumb-menu">
-            {breadcrumbItems.map((item, index) => (
-              <li key={index}>
-                {item.href ? (
-                  <Link href={item.href}>{item.label}</Link>
-                ) : (
-                  item.label
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
     </div>
   );
 }
