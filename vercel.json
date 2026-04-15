@@ -7,5 +7,5 @@
     "silent": false
   },
   "ignoreCommand": "git diff --quiet HEAD^ HEAD -- src/ scripts/ prisma/ public/ package.json pnpm-lock.yaml",
-  "installCommand": "pnpm install && pnpm exec prisma migrate deploy && pnpm exec tsx prisma/seed.ts || true"
+  "installCommand": "pnpm install && pnpm exec prisma migrate deploy"
 }

@@ -23,6 +23,24 @@ import BlogSlider from "@/components/home/BlogSlider";
 
 export const dynamic = "force-dynamic";
 
+async function initializeDatabase() {
+  try {
+    const productCount = await prisma.productCategory.count();
+    if (productCount === 0) {
+      console.log("[HOME] Database empty, initializing...");
+      const response = await fetch(
+        `${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000"}/api/init-db`,
+        { cache: "no-store" }
+      );
+      if (response.ok) {
+        console.log("[HOME] Database initialized successfully");
+      }
+    }
+  } catch (error) {
+    console.error("[HOME] Error initializing database:", error);
+  }
+}
+
 async function getSettings(keys: string[]) {
   const rows = await prisma.siteSetting.findMany({
     where: { key: { in: keys } },
@@ -33,6 +51,9 @@ async function getSettings(keys: string[]) {
 }
 
 export default async function Home() {
+  // Initialize database if empty
+  await initializeDatabase();
+
   // Check if there's an active slide group
   const activeGroup = await prisma.heroSlideGroup.findFirst({
     where: { active: true },
