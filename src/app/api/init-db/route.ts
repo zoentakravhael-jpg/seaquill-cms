@@ -113,12 +113,11 @@ export async function GET() {
       prisma.product.create({
         data: {
           slug: "sea-quill-omega-3",
-          title: "Sea-Quill Omega 3",
+          name: "Sea-Quill Omega 3",
           categoryId: productCategories[4].id,
           description: "Suplemen omega 3 premium untuk kesehatan jantung",
           image: "/assets/img/product/omega3.jpg",
-          price: 125000,
-          stock: 100,
+          stock: true,
           sku: "SQ-OMEGA3-001",
           sortOrder: 1,
         },
@@ -126,12 +125,11 @@ export async function GET() {
       prisma.product.create({
         data: {
           slug: "sea-quill-vitamin-c",
-          title: "Sea-Quill Vitamin C",
+          name: "Sea-Quill Vitamin C",
           categoryId: productCategories[2].id,
           description: "Vitamin C tinggi untuk imun tubuh",
           image: "/assets/img/product/vitc.jpg",
-          price: 85000,
-          stock: 150,
+          stock: true,
           sku: "SQ-VITC-001",
           sortOrder: 2,
         },
@@ -139,12 +137,11 @@ export async function GET() {
       prisma.product.create({
         data: {
           slug: "sea-quill-collagen",
-          title: "Sea-Quill Collagen",
+          name: "Sea-Quill Collagen",
           categoryId: productCategories[0].id,
           description: "Kolagen premium untuk kesehatan kulit",
           image: "/assets/img/product/collagen.jpg",
-          price: 195000,
-          stock: 80,
+          stock: true,
           sku: "SQ-COL-001",
           sortOrder: 3,
         },
@@ -152,12 +149,11 @@ export async function GET() {
       prisma.product.create({
         data: {
           slug: "sea-quill-prenatal",
-          title: "Sea-Quill Prenatal",
+          name: "Sea-Quill Prenatal",
           categoryId: productCategories[1].id,
           description: "Formula khusus untuk ibu hamil",
           image: "/assets/img/product/prenatal.jpg",
-          price: 245000,
-          stock: 60,
+          stock: true,
           sku: "SQ-PREN-001",
           sortOrder: 4,
         },
@@ -165,12 +161,11 @@ export async function GET() {
       prisma.product.create({
         data: {
           slug: "sea-quill-joint-care",
-          title: "Sea-Quill Joint Care",
+          name: "Sea-Quill Joint Care",
           categoryId: productCategories[6].id,
           description: "Suplemen untuk kesehatan sendi dan tulang",
           image: "/assets/img/product/joint.jpg",
-          price: 165000,
-          stock: 75,
+          stock: true,
           sku: "SQ-JOINT-001",
           sortOrder: 5,
         },
@@ -178,12 +173,11 @@ export async function GET() {
       prisma.product.create({
         data: {
           slug: "sea-quill-glucosamine",
-          title: "Sea-Quill Glucosamine",
+          name: "Sea-Quill Glucosamine",
           categoryId: productCategories[6].id,
           description: "Glucosamine untuk mobilitas sendi",
           image: "/assets/img/product/glucosamine.jpg",
-          price: 155000,
-          stock: 90,
+          stock: true,
           sku: "SQ-GLUC-001",
           sortOrder: 6,
         },
@@ -191,12 +185,11 @@ export async function GET() {
       prisma.product.create({
         data: {
           slug: "sea-quill-vitamin-d",
-          title: "Sea-Quill Vitamin D",
+          name: "Sea-Quill Vitamin D",
           categoryId: productCategories[2].id,
           description: "Vitamin D untuk kesehatan tulang dan imun",
           image: "/assets/img/product/vitd.jpg",
-          price: 95000,
-          stock: 120,
+          stock: true,
           sku: "SQ-VITD-001",
           sortOrder: 7,
         },
@@ -204,12 +197,11 @@ export async function GET() {
       prisma.product.create({
         data: {
           slug: "sea-quill-multivitamin",
-          title: "Sea-Quill Multivitamin",
+          name: "Sea-Quill Multivitamin",
           categoryId: productCategories[2].id,
           description: "Multivitamin lengkap untuk kebutuhan sehari-hari",
           image: "/assets/img/product/multivit.jpg",
-          price: 135000,
-          stock: 140,
+          stock: true,
           sku: "SQ-MULTI-001",
           sortOrder: 8,
         },
@@ -217,12 +209,11 @@ export async function GET() {
       prisma.product.create({
         data: {
           slug: "sea-quill-beauty-boost",
-          title: "Sea-Quill Beauty Boost",
+          name: "Sea-Quill Beauty Boost",
           categoryId: productCategories[0].id,
           description: "Suplemen untuk kecantikan dari dalam",
           image: "/assets/img/product/beauty.jpg",
-          price: 175000,
-          stock: 70,
+          stock: true,
           sku: "SQ-BEAUTY-001",
           sortOrder: 9,
         },
@@ -283,8 +274,6 @@ export async function GET() {
           author: "Admin",
           publishedAt: now,
           status: "published",
-          featured: true,
-          sortOrder: 1,
         },
       }),
       prisma.blogPost.create({
@@ -298,8 +287,6 @@ export async function GET() {
           author: "Admin",
           publishedAt: now,
           status: "published",
-          featured: false,
-          sortOrder: 2,
         },
       }),
       prisma.blogPost.create({
@@ -313,8 +300,6 @@ export async function GET() {
           author: "Admin",
           publishedAt: now,
           status: "published",
-          featured: true,
-          sortOrder: 3,
         },
       }),
       prisma.blogPost.create({
@@ -328,8 +313,6 @@ export async function GET() {
           author: "Admin",
           publishedAt: now,
           status: "published",
-          featured: true,
-          sortOrder: 4,
         },
       }),
       prisma.blogPost.create({
@@ -344,8 +327,6 @@ export async function GET() {
           author: "Admin",
           publishedAt: now,
           status: "published",
-          featured: false,
-          sortOrder: 5,
         },
       }),
       prisma.blogPost.create({
@@ -359,8 +340,6 @@ export async function GET() {
           author: "Admin",
           publishedAt: now,
           status: "published",
-          featured: false,
-          sortOrder: 6,
         },
       }),
       prisma.blogPost.create({
@@ -374,8 +353,6 @@ export async function GET() {
           author: "Admin",
           publishedAt: now,
           status: "published",
-          featured: true,
-          sortOrder: 7,
         },
       }),
       prisma.blogPost.create({
@@ -389,8 +366,6 @@ export async function GET() {
           author: "Admin",
           publishedAt: now,
           status: "published",
-          featured: false,
-          sortOrder: 8,
         },
       }),
     ]);
@@ -403,7 +378,6 @@ export async function GET() {
         password: hashedPassword,
         name: "Admin Seaquill",
         role: "admin",
-        active: true,
       },
     });
 
@@ -448,30 +422,27 @@ export async function GET() {
         data: {
           title: "Suplemen Kesehatan Premium",
           subtitle: "Bersertifikat BPOM & Halal",
-          image: "/assets/img/banner/slide1.jpg",
+          bgImage: "/assets/img/banner/slide1.jpg",
           active: true,
           groupId: heroSlideGroup.id,
-          sortOrder: 1,
         },
       }),
       prisma.heroSlide.create({
         data: {
           title: "Produk Terbaik untuk Keluarga",
           subtitle: "Menjaga Kesehatan Anda",
-          image: "/assets/img/banner/slide2.jpg",
+          bgImage: "/assets/img/banner/slide2.jpg",
           active: true,
           groupId: heroSlideGroup.id,
-          sortOrder: 2,
         },
       }),
       prisma.heroSlide.create({
         data: {
           title: "Kualitas Terpercaya Sejak Lama",
           subtitle: "Dipercaya Jutaan Pelanggan",
-          image: "/assets/img/banner/slide3.jpg",
+          bgImage: "/assets/img/banner/slide3.jpg",
           active: true,
           groupId: heroSlideGroup.id,
-          sortOrder: 3,
         },
       }),
     ]);
@@ -481,50 +452,43 @@ export async function GET() {
       prisma.brandPartner.create({
         data: {
           name: "Partner 1",
-          logo: "/assets/img/partner/partner1.png",
-          sortOrder: 1,
+          logoImage: "/assets/img/partner/partner1.png",
         },
       }),
       prisma.brandPartner.create({
         data: {
           name: "Partner 2",
-          logo: "/assets/img/partner/partner2.png",
-          sortOrder: 2,
+          logoImage: "/assets/img/partner/partner2.png",
         },
       }),
       prisma.brandPartner.create({
         data: {
           name: "Partner 3",
-          logo: "/assets/img/partner/partner3.png",
-          sortOrder: 3,
+          logoImage: "/assets/img/partner/partner3.png",
         },
       }),
       prisma.brandPartner.create({
         data: {
           name: "Partner 4",
-          logo: "/assets/img/partner/partner4.png",
-          sortOrder: 4,
+          logoImage: "/assets/img/partner/partner4.png",
         },
       }),
       prisma.brandPartner.create({
         data: {
           name: "Partner 5",
-          logo: "/assets/img/partner/partner5.png",
-          sortOrder: 5,
+          logoImage: "/assets/img/partner/partner5.png",
         },
       }),
       prisma.brandPartner.create({
         data: {
           name: "Partner 6",
-          logo: "/assets/img/partner/partner6.png",
-          sortOrder: 6,
+          logoImage: "/assets/img/partner/partner6.png",
         },
       }),
       prisma.brandPartner.create({
         data: {
           name: "Partner 7",
-          logo: "/assets/img/partner/partner7.png",
-          sortOrder: 7,
+          logoImage: "/assets/img/partner/partner7.png",
         },
       }),
     ]);
@@ -533,10 +497,9 @@ export async function GET() {
     for (let i = 1; i <= 18; i++) {
       await prisma.galleryItem.create({
         data: {
-          title: `Gallery Item ${i}`,
           image: `/assets/img/gallery/gallery${i}.jpg`,
-          category: i % 3 === 0 ? "event" : "product",
-          sortOrder: i,
+          caption: `Gallery Item ${i}`,
+          platform: i % 3 === 0 ? "facebook" : i % 2 === 0 ? "tiktok" : "instagram",
         },
       });
     }
