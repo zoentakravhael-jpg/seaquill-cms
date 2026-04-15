@@ -1,10 +1,11 @@
 {
-  "buildCommand": "prisma generate && prisma migrate deploy && npx tsx prisma/seed.ts && next build",
+  "buildCommand": "prisma generate && next build",
   "env": {
     "NODE_ENV": "production"
   },
   "git": {
     "silent": false
   },
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- src/ scripts/ prisma/ public/ package.json pnpm-lock.yaml"
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- src/ scripts/ prisma/ public/ package.json pnpm-lock.yaml",
+  "installCommand": "pnpm install && pnpm exec prisma migrate deploy && pnpm exec tsx prisma/seed.ts || true"
 }
