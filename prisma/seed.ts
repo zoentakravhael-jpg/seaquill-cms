@@ -8,8 +8,9 @@ const adapter = new PrismaPg(pool as any);
 const prisma = new PrismaClient({ adapter });
 
 async function resetAllTables() {
-  await prisma.formSubmission.deleteMany();
-  await prisma.form.deleteMany();
+  // form_submissions / forms may not exist in production yet — skip gracefully
+  try { await (prisma as any).formSubmission.deleteMany(); } catch {}
+  try { await (prisma as any).form.deleteMany(); } catch {}
   await prisma.contactMessage.deleteMany();
   await prisma.activityLog.deleteMany();
   await prisma.mediaFile.deleteMany();
