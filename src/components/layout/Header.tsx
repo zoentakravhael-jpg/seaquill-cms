@@ -570,7 +570,7 @@ export default function Header({
                       </Link>
                     </div>
                   </div>
-                  {/* Mobile hamburger — inline with logo */}
+                  {/* Mobile: Hamburger only — inline with logo */}
                   <div className="col-auto d-lg-none">
                     <button
                       type="button"
@@ -619,6 +619,39 @@ export default function Header({
                   </div>
 
                 </div>
+                {/* Mobile: Connect + Cart row below logo */}
+                <div className="row d-lg-none" style={{ paddingBottom: "8px" }}>
+                  <div className="col-12">
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "10px" }}>
+                      {popupConfig.enabled && (
+                        <button
+                          onClick={() => { setConnectOpen(true); setConnectStatus("idle"); setConnectError(""); }}
+                          style={{
+                            display: "inline-flex", alignItems: "center", gap: "6px",
+                            padding: "8px 16px", background: "var(--theme-color, #009f56)",
+                            color: "#fff", border: "none", borderRadius: "6px",
+                            cursor: "pointer", fontSize: "13px", fontWeight: 600, whiteSpace: "nowrap",
+                          }}
+                        >
+                          <i className={popupConfig.buttonIcon}></i>
+                          {popupConfig.buttonText}
+                        </button>
+                      )}
+                      <Link
+                        href="/belanja"
+                        style={{
+                          display: "inline-flex", alignItems: "center", gap: "6px",
+                          padding: "8px 16px", background: "#F2F3FC",
+                          color: "inherit", borderRadius: "6px", fontWeight: 500, fontSize: "13px", whiteSpace: "nowrap",
+                        }}
+                        title="Belanja di Marketplace"
+                      >
+                        <i className="fa-solid fa-cart-shopping" style={{ color: "var(--theme-color, #009f56)" }}></i>
+                        Belanja
+                      </Link>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -665,30 +698,40 @@ export default function Header({
                     </div>
                   </div>
                   <div className="col-auto">
-                    <div className="header-button d-none d-lg-block" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      {popupConfig.enabled && (
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      {/* Desktop: Connect + Cart */}
+                      <div className="header-button d-none d-lg-flex" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        {popupConfig.enabled && (
+                        <button
+                          onClick={() => { setConnectOpen(true); setConnectStatus("idle"); setConnectError(""); }}
+                          style={{
+                            display: "inline-flex", alignItems: "center", gap: "6px",
+                            padding: "8px 14px", background: "var(--theme-color, #009f56)",
+                            color: "#fff", border: "none", borderRadius: "6px",
+                            cursor: "pointer", fontSize: "13px", fontWeight: 600, whiteSpace: "nowrap",
+                          }}
+                        >
+                          <i className={popupConfig.buttonIcon}></i>
+                          {popupConfig.buttonText}
+                        </button>
+                        )}
+                        <Link
+                          href="/belanja"
+                          style={{ padding: "0 10px", display: "inline-flex", alignItems: "center", color: "inherit" }}
+                          title="Belanja di Marketplace"
+                        >
+                          <i className="fa-solid fa-cart-shopping" style={{ fontSize: "22px" }}></i>
+                        </Link>
+                      </div>
+                      {/* Mobile: Hamburger in sticky */}
                       <button
-                        onClick={() => { setConnectOpen(true); setConnectStatus("idle"); setConnectError(""); }}
-                        style={{
-                          display: "inline-flex", alignItems: "center", gap: "6px",
-                          padding: "8px 14px", background: "var(--theme-color, #009f56)",
-                          color: "#fff", border: "none", borderRadius: "6px",
-                          cursor: "pointer", fontSize: "13px", fontWeight: 600, whiteSpace: "nowrap",
-                        }}
+                        type="button"
+                        className="th-menu-toggle d-lg-none"
+                        onClick={() => setMobileMenuOpen(true)}
                       >
-                        <i className={popupConfig.buttonIcon}></i>
-                        {popupConfig.buttonText}
+                        <i className="far fa-bars"></i>
                       </button>
-                      )}
-                      <Link
-                        href="/belanja"
-                        style={{ padding: "0 10px", display: "inline-flex", alignItems: "center", color: "inherit" }}
-                        title="Belanja di Marketplace"
-                      >
-                        <i className="fa-solid fa-cart-shopping" style={{ fontSize: "22px" }}></i>
-                      </Link>
                     </div>
-                    {/* Old mobile hamburger removed — now in menu-top */}
                   </div>
                 </div>
               </div>

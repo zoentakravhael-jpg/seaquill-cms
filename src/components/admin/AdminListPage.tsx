@@ -55,6 +55,7 @@ interface AdminListPageProps {
   activeFilters?: Record<string, string>;
   editBasePath?: string;
   deleteAction?: (formData: FormData) => Promise<void>;
+  duplicateAction?: (id: number) => Promise<void>;
   bulkDeleteAction?: (ids: number[]) => Promise<void>;
   bulkStatusAction?: (ids: number[], status: string) => Promise<void>;
   idKey?: string;
@@ -70,41 +71,34 @@ function ImageCell({ src, alt, size, fit }: { src: string; alt: string; size: nu
   console.log("[ImageCell] src=", src, "errored=", errored);
   if (errored) {
     return (
-      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-        <div
-          style={{
-            width: size, height: size, borderRadius: 6,
-            background: "#fff3f3", border: "2px solid red",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            color: "red", fontSize: size * 0.3,
-          }}
-          title={src}
-        >
-          <i className="fas fa-image" />
-        </div>
-        <span style={{ fontSize: 10, color: "red", maxWidth: size, wordBreak: "break-all" }}>ERR: {src}</span>
+      <div
+        style={{
+          width: size, height: size, borderRadius: 6,
+          background: "#f5f5f5", border: "1px solid #ddd",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          color: "#aaa", fontSize: size * 0.3,
+        }}
+        title={src}
+      >
+        <i className="fas fa-image" />
       </div>
     );
   }
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-      <div
-        style={{
-          width: size, height: size, borderRadius: 6, overflow: "hidden",
-          background: "#f0f8ff", border: "2px solid #0066ff",
-          display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-        }}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={src}
-          alt={alt}
-          onError={() => { console.error("[ImageCell] LOAD FAILED:", src); setErrored(true); }}
-          onLoad={() => console.log("[ImageCell] LOADED OK:", src)}
-          style={{ display: "block", width: "100%", height: "100%", objectFit: fit }}
-        />
-      </div>
-      <span style={{ fontSize: 9, color: "#666", maxWidth: size, wordBreak: "break-all" }}>{src}</span>
+    <div
+      style={{
+        width: size, height: size, borderRadius: 6, overflow: "hidden",
+        background: "#f5f5f5", border: "1px solid #eee",
+        display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+      }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt={alt}
+        onError={() => setErrored(true)}
+        style={{ display: "block", width: "100%", height: "100%", objectFit: fit }}
+      />
     </div>
   );
 }
@@ -119,8 +113,7 @@ function renderCell(item: any, col: Column) {
     case "strong":
       return <strong>{String(value ?? "")}</strong>;
     case "image": {
-      console.log(`[renderCell:image] key=${col.key} value=`, JSON.stringify(value), `type=${typeof value}`);
-      if (!value) return <span style={{ color: "red", fontWeight: "bold" }}>NO VALUE ({col.key})</span>;
+      if (!value) return <span style={{ color: "var(--admin-text-muted)" }}>—</span>;
       const alt = col.imageAltKey ? String(item[col.imageAltKey] ?? "") : "";
       const size = col.imageSize || 40;
       return <ImageCell src={String(value)} alt={alt} size={size} fit={col.imageFit || "contain"} />;
@@ -200,6 +193,7 @@ export default function AdminListPage({
   activeFilters = {},
   editBasePath,
   deleteAction,
+  duplicateAction,
   bulkDeleteAction,
   bulkStatusAction,
   toggleActiveAction,
@@ -433,8 +427,8 @@ export default function AdminListPage({
                     )}
                   </th>
                 ))}
-                {(editBasePath || deleteAction) && (
-                  <th style={{ textAlign: "right", width: 100 }}>Aksi</th>
+                {(editBasePath || deleteAction || duplicateAction) && (
+                  <th style={{ textAlign: "right", width: 120 }}>Aksi</th>
                 )}
               </tr>
             </thead>
@@ -444,7 +438,7 @@ export default function AdminListPage({
                   <td
                     colSpan={
                       columns.length +
-                      (editBasePath || deleteAction ? 1 : 0) +
+                      (editBasePath || deleteAction || duplicateAction ? 1 : 0) +
                       (bulkDeleteAction || bulkStatusAction ? 1 : 0)
                     }
                   >
@@ -488,13 +482,32 @@ export default function AdminListPage({
                           {renderCell(item, col)}
                         </td>
                       ))}
-                      {(editBasePath || deleteAction) && (
+                      {(editBasePath || deleteAction || duplicateAction) && (
                         <td style={{ textAlign: "right" }}>
                           <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 6 }}>
                             {editBasePath && (
                               <Link href={`${editBasePath}/${id}`} className="admin-btn-icon edit" title="Edit">
                                 <i className="fas fa-pen"></i>
                               </Link>
+                            )}
+                            {duplicateAction && (
+                              <button
+                                type="button"
+                                className="admin-btn-icon"
+                                title="Duplikat"
+                                style={{ color: "var(--admin-text-secondary)" }}
+                                onClick={async () => {
+                                  try {
+                                    await duplicateAction(id);
+                                    toast.success("Berhasil diduplikat sebagai draft");
+                                    router.refresh();
+                                  } catch {
+                                    toast.error("Gagal menduplikat");
+                                  }
+                                }}
+                              >
+                                <i className="fas fa-copy"></i>
+                              </button>
                             )}
                             {deleteAction && (
                               <form action={handleDelete}>

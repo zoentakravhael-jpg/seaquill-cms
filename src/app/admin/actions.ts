@@ -163,6 +163,50 @@ export async function deleteProduct(formData: FormData) {
   revalidatePath("/admin/produk");
 }
 
+export async function duplicateProduct(id: number): Promise<void> {
+  await requireAuth();
+  const source = await prisma.product.findUnique({ where: { id } });
+  if (!source) return;
+
+  // Generate unique slug
+  let baseSlug = `${source.slug}-copy`;
+  let candidate = baseSlug;
+  let counter = 1;
+  while (await prisma.product.findUnique({ where: { slug: candidate } })) {
+    candidate = `${baseSlug}-${counter++}`;
+  }
+
+  const copy = await prisma.product.create({
+    data: {
+      name: `${source.name} (Copy)`,
+      slug: candidate,
+      image: source.image,
+      images: source.images,
+      shortDescription: source.shortDescription,
+      description: source.description,
+      composition: source.composition,
+      dosage: source.dosage,
+      sku: source.sku ? `${source.sku}-copy` : "",
+      tags: source.tags,
+      features: source.features,
+      stock: source.stock,
+      rating: source.rating,
+      reviewCount: 0,
+      isBestSeller: source.isBestSeller,
+      isNew: source.isNew,
+      status: "draft",
+      metaTitle: source.metaTitle,
+      metaDescription: source.metaDescription,
+      ogImage: source.ogImage,
+      sortOrder: source.sortOrder,
+      categoryId: source.categoryId,
+    },
+  });
+
+  await logActivity("create", "product", copy.id, copy.name);
+  revalidatePath("/admin/produk");
+}
+
 export async function createBlogCategory(formData: FormData): Promise<ActionResult> {
   await requireAuth();
   const title = (formData.get("title") as string)?.trim();
@@ -276,6 +320,40 @@ export async function deleteBlogPost(formData: FormData) {
   const post = await prisma.blogPost.findUnique({ where: { id } });
   await prisma.blogPost.update({ where: { id }, data: { deletedAt: new Date() } });
   await logActivity("delete", "article", id, post?.title);
+  revalidatePath("/admin/artikel");
+}
+
+export async function duplicateBlogPost(id: number): Promise<void> {
+  await requireAuth();
+  const source = await prisma.blogPost.findUnique({ where: { id } });
+  if (!source) return;
+
+  // Generate unique slug
+  let baseSlug = `${source.slug}-copy`;
+  let candidate = baseSlug;
+  let counter = 1;
+  while (await prisma.blogPost.findUnique({ where: { slug: candidate } })) {
+    candidate = `${baseSlug}-${counter++}`;
+  }
+
+  const copy = await prisma.blogPost.create({
+    data: {
+      title: `${source.title} (Copy)`,
+      slug: candidate,
+      image: source.image,
+      author: source.author,
+      content: source.content,
+      excerpt: source.excerpt,
+      tags: source.tags,
+      categoryId: source.categoryId,
+      status: "draft",
+      metaTitle: source.metaTitle,
+      metaDescription: source.metaDescription,
+      ogImage: source.ogImage,
+    },
+  });
+
+  await logActivity("create", "article", copy.id, copy.title);
   revalidatePath("/admin/artikel");
 }
 

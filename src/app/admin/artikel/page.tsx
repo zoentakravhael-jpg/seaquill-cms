@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import AdminListPage, { type Column } from "@/components/admin/AdminListPage";
-import { deleteBlogPost, bulkDeleteBlogPosts, bulkUpdateBlogPostStatus } from "../actions";
+import { deleteBlogPost, bulkDeleteBlogPosts, bulkUpdateBlogPostStatus, duplicateBlogPost } from "../actions";
 
 interface Props {
   searchParams: Promise<Record<string, string | undefined>>;
@@ -45,7 +45,7 @@ export default async function ArtikelAdminPage({ searchParams }: Props) {
 
   const columns: Column[] = [
     { key: "id", label: "ID", sortable: true },
-    { key: "image", label: "Gambar", type: "image", imageAltKey: "title", imageFit: "cover" },
+    { key: "image", label: "Gambar", type: "image", imageAltKey: "title", imageSize: 80, imageFit: "cover" },
     { key: "title", label: "Judul", sortable: true, type: "strong" },
     { key: "category", label: "Kategori", type: "badge", nestedKey: "category.title", badgeVariant: "purple" },
     { key: "author", label: "Penulis", sortable: true },
@@ -99,6 +99,7 @@ export default async function ArtikelAdminPage({ searchParams }: Props) {
         activeFilters={{ status: statusFilter, category: categoryFilter }}
         editBasePath="/admin/artikel/edit"
         deleteAction={deleteBlogPost}
+        duplicateAction={duplicateBlogPost}
         bulkDeleteAction={bulkDeleteBlogPosts}
         bulkStatusAction={bulkUpdateBlogPostStatus}
         entityName="Artikel"

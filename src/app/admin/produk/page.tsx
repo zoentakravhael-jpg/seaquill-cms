@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import AdminListPage, { type Column } from "@/components/admin/AdminListPage";
-import { deleteProduct, bulkDeleteProducts, bulkUpdateProductStatus } from "../actions";
+import { deleteProduct, bulkDeleteProducts, bulkUpdateProductStatus, duplicateProduct } from "../actions";
 
 interface Props {
   searchParams: Promise<Record<string, string | undefined>>;
@@ -106,6 +106,7 @@ export default async function ProdukPage({ searchParams }: Props) {
         activeFilters={{ status: statusFilter, category: categoryFilter }}
         editBasePath="/admin/produk/edit"
         deleteAction={deleteProduct}
+        duplicateAction={duplicateProduct}
         bulkDeleteAction={bulkDeleteProducts}
         bulkStatusAction={bulkUpdateProductStatus}
         entityName="Produk"
