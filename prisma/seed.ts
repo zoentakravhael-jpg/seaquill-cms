@@ -224,12 +224,21 @@ export async function seedAllTables() {
   console.log("   Brand partners: 7, Gallery items: 18, Promo items: 5, Event items: 3");
 }
 
-seedAllTables()
-  .catch((e) => {
-    console.error("[SEED] Error:", e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-    await pool.end();
-  });
+// Only run when executed directly (not when imported as module)
+const isDirectRun = process.argv[1] && (
+  process.argv[1].endsWith("seed.ts") ||
+  process.argv[1].endsWith("seed.js") ||
+  process.argv[1].includes("prisma/seed")
+);
+
+if (isDirectRun) {
+  seedAllTables()
+    .catch((e) => {
+      console.error("[SEED] Error:", e);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+      await pool.end();
+    });
+}
