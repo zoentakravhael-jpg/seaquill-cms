@@ -49,9 +49,9 @@ _check.ts
 test-*.mjs
 CONTENT_EXTRACTION.md
 
-# uploads (user-uploaded files, use cloud storage in production)
-/public/uploads/*
-!/public/uploads/.gitkeep
+# uploads are committed to repo for production deployment
+# /public/uploads/*
+# !/public/uploads/.gitkeep
 
 .vercel
 .env*.local
