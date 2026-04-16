@@ -8,5 +8,3 @@ scripts
 .env.*.local
 node_modules
 .next/cache
-public/uploads/*
-!public/uploads/.gitkeep
