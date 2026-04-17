@@ -510,7 +510,7 @@ export async function updateSettings(formData: FormData): Promise<ActionResult> 
     "site_name", "site_tagline", "site_description", "site_copyright",
     "contact_email", "contact_phone", "contact_address", "contact_whatsapp",
     "header_logo", "header_logo_sticky", "header_badges",
-    "nav_menu", "footer_nav",
+    "nav_menu", "footer_nav", "footer_visibility",
     "social_facebook", "social_instagram", "social_twitter", "social_youtube",
     "social_tiktok", "social_linkedin", "social_pinterest",
     "social_shopee", "social_tokopedia", "social_lazada", "social_tiktok_shop",

@@ -37,6 +37,16 @@ export default function Footer({
   const tokopediaUrl = s.social_tokopedia || "https://www.tokopedia.com/seaquill";
   const shopeeUrl = s.social_shopee || "https://shopee.co.id/seaquill";
 
+  // Parse footer visibility flags
+  const fv = useMemo(() => {
+    const defaults = { logo: true, contact: true, navigation: true, headline: true, marketplace: true, copyright: true, social_media: true };
+    try {
+      return { ...defaults, ...JSON.parse(s.footer_visibility || "{}") };
+    } catch {
+      return defaults;
+    }
+  }, [s.footer_visibility]);
+
   // Parse footer navigation categories from DB
   const footerNavCategories = useMemo(() => {
     const defaultCategories: FooterNavCategory[] = [
@@ -86,6 +96,7 @@ export default function Footer({
       <div className="widget-area">
         <div className="container">
           <div className="row justify-content-between">
+            {fv.logo && (
             <div className="col-md-6 col-xxl-3 col-xl-4">
               <div className="widget footer-widget mb-0">
                 <div className="th-widget-about">
@@ -100,7 +111,8 @@ export default function Footer({
                 </div>
               </div>
             </div>
-            {footerNavCategories.map((cat, idx) => {
+            )}
+            {fv.navigation && footerNavCategories.map((cat, idx) => {
               const links = resolveLinks(cat);
               if (links.length === 0) return null;
               return (
@@ -124,6 +136,7 @@ export default function Footer({
         </div>
         <div className="container">
           <div className="row justify-content-end align-items-end">
+            {fv.contact && (
             <div className="col-xl-4">
               <div className="footer-widget-about">
                 <div className="th-widget-about">
@@ -146,8 +159,10 @@ export default function Footer({
                 </div>
               </div>
             </div>
+            )}
             <div className="col-xl-8">
               <div className="row gy-4">
+                {fv.headline && (
                 <div className="col-lg-6">
                   <div className="title-area mb-0 text-center text-lg-start">
                     <h4 className="sec-title m-0">
@@ -155,6 +170,8 @@ export default function Footer({
                     </h4>
                   </div>
                 </div>
+                )}
+                {fv.marketplace && (
                 <div className="col-lg-6">
                   <div className="footer-top-btn">
                     <div className="btn-group justify-content-center justify-content-lg-end">
@@ -185,18 +202,23 @@ export default function Footer({
                     </div>
                   </div>
                 </div>
+                )}
               </div>
             </div>
           </div>
         </div>
+        {(fv.copyright || fv.social_media) && (
         <div className="copyright-wrap">
           <div className="container">
             <div className="row gy-2 align-items-center">
+              {fv.copyright && (
               <div className="col-lg-5">
                 <p className="copyright-text">
                   {copyright}
                 </p>
               </div>
+              )}
+              {fv.social_media && (
               <div className="col-lg-7 text-center text-lg-end">
                 <div className="social-links">
                   <span className="title">Social Media:</span>
@@ -227,9 +249,11 @@ export default function Footer({
                   )}
                 </div>
               </div>
+              )}
             </div>
           </div>
         </div>
+        )}
       </div>
       <div
         className="heart-rate2"

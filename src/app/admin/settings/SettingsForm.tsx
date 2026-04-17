@@ -40,6 +40,16 @@ interface SmtpConfig {
   enabled: boolean;
 }
 
+interface FooterVisibility {
+  logo: boolean;
+  contact: boolean;
+  navigation: boolean;
+  headline: boolean;
+  marketplace: boolean;
+  copyright: boolean;
+  social_media: boolean;
+}
+
 interface SettingsFormProps {
   settings: Record<string, string>;
 }
@@ -132,6 +142,17 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
   }, [settings.footer_nav]);
   const [footerNav, setFooterNav] = useState<FooterNavCategory[]>(initialFooterNav);
   const [footerDragCat, setFooterDragCat] = useState<number | null>(null);
+
+  // Footer visibility state
+  const initialFooterVisibility = useMemo((): FooterVisibility => {
+    const defaults: FooterVisibility = { logo: true, contact: true, navigation: true, headline: true, marketplace: true, copyright: true, social_media: true };
+    try {
+      return { ...defaults, ...JSON.parse(settings.footer_visibility || "{}") };
+    } catch {
+      return defaults;
+    }
+  }, [settings.footer_visibility]);
+  const [footerVisibility, setFooterVisibility] = useState<FooterVisibility>(initialFooterVisibility);
 
   // SMTP Config state
   const initialSmtp = useMemo((): SmtpConfig => {
@@ -540,6 +561,63 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
       {/* ── Tab: Footer ── */}
       <div style={{ display: activeTab === "footer" ? "block" : "none" }}>
         <input type="hidden" name="footer_nav" value={JSON.stringify(footerNav)} />
+        <input type="hidden" name="footer_visibility" value={JSON.stringify(footerVisibility)} />
+
+        {/* Visibilitas Komponen Footer */}
+        <div className="admin-card" style={{ marginBottom: 24 }}>
+          <div className="admin-card-header">
+            <span className="admin-card-title">
+              <i className="fas fa-eye" style={{ marginRight: 8, color: "var(--admin-primary)" }}></i>Visibilitas Komponen Footer
+            </span>
+          </div>
+          <div className="admin-card-body">
+            <div style={{ padding: "12px 16px", background: "var(--admin-bg)", borderRadius: 8, marginBottom: 16, fontSize: 13, color: "var(--admin-text-muted)" }}>
+              <i className="fas fa-info-circle" style={{ marginRight: 6 }}></i>
+              Aktifkan atau nonaktifkan masing-masing komponen yang tampil di footer publik. Perubahan langsung berlaku setelah disimpan.
+            </div>
+            {([
+              { key: "logo", label: "Logo & Deskripsi", icon: "fas fa-image", desc: "Logo Seaquill dan paragraf deskripsi perusahaan" },
+              { key: "contact", label: "Kontak", icon: "fas fa-phone", desc: "Nomor telepon dan alamat email" },
+              { key: "navigation", label: "Menu Navigasi", icon: "fas fa-th-list", desc: "Kolom menu kategori produk, artikel, dan custom" },
+              { key: "headline", label: "Headline", icon: "fas fa-heading", desc: "Tagline teks besar di bagian tengah-bawah footer" },
+              { key: "marketplace", label: "Marketplace", icon: "fas fa-shopping-cart", desc: "Tombol link Tokopedia dan Shopee" },
+              { key: "copyright", label: "Copyright", icon: "fas fa-copyright", desc: "Teks copyright di bar paling bawah" },
+              { key: "social_media", label: "Social Media", icon: "fas fa-share-alt", desc: "Icon-icon link media sosial" },
+            ] as { key: keyof FooterVisibility; label: string; icon: string; desc: string }[]).map(({ key, label, icon, desc }) => (
+              <div key={key} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 0", borderBottom: "1px solid var(--admin-border)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <i className={icon} style={{ width: 20, textAlign: "center", color: "var(--admin-primary)", fontSize: 14 }}></i>
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: 14 }}>{label}</div>
+                    <div style={{ fontSize: 12, color: "var(--admin-text-muted)", marginTop: 2 }}>{desc}</div>
+                  </div>
+                </div>
+                <label style={{ position: "relative", display: "inline-flex", alignItems: "center", cursor: "pointer", flexShrink: 0 }}>
+                  <input
+                    type="checkbox"
+                    checked={footerVisibility[key]}
+                    onChange={(e) => setFooterVisibility((prev) => ({ ...prev, [key]: e.target.checked }))}
+                    style={{ position: "absolute", opacity: 0, width: 0, height: 0 }}
+                  />
+                  <span style={{
+                    display: "inline-block", width: 44, height: 24, borderRadius: 12,
+                    background: footerVisibility[key] ? "var(--admin-primary)" : "var(--admin-border)",
+                    transition: "background 0.2s", position: "relative",
+                  }}>
+                    <span style={{
+                      position: "absolute", top: 3, left: footerVisibility[key] ? 23 : 3,
+                      width: 18, height: 18, borderRadius: "50%", background: "#fff",
+                      transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+                    }}></span>
+                  </span>
+                  <span style={{ marginLeft: 8, fontSize: 13, fontWeight: 500, color: footerVisibility[key] ? "var(--admin-primary)" : "var(--admin-text-muted)" }}>
+                    {footerVisibility[key] ? "Aktif" : "Nonaktif"}
+                  </span>
+                </label>
+              </div>
+            ))}
+          </div>
+        </div>
 
         {/* Konten Footer Reference */}
         <div className="admin-card" style={{ marginBottom: 24 }}>
